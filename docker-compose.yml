@@ -1,15 +1,19 @@
-version: '3.8'
-
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container-name: todo-app
+    container_name: todo-app  # Fixed: underscore instead of hyphen
     ports:
       - "8080:8080"
     volumes:
       - ./:/app
+    environment:
+      - DATABASE_URL=postgresql://postgresuser:postgrespassword@postgres:5432/db_postgres
+      - NODE_ENV=development
+      - CORS_URL=http://localhost:3000
+    depends_on:
+      - postgres
     networks:
       - todo-network
 

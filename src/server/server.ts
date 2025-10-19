@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { env } from '@/env';
 import userRoutes from '@/routes/user.routes';
 import contactRoutes from '@/routes/todo.routes';
+import { errorMiddleware } from '@/middlewares/error';
 
 const app: express.Application = express();
 
@@ -29,5 +30,8 @@ app.use((_req, res) => {
     message: 'Page not found',
   });
 });
+
+// Error middleware should be last
+app.use(errorMiddleware);
 
 export default app;
