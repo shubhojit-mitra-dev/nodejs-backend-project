@@ -10,7 +10,7 @@ const app: express.Application = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: env.CORS_URL, optionsSuccessStatus: 200 }))
+app.use(cors({ origin: env.CORS_URL, optionsSuccessStatus: 200 }));
 app.use(helmet({
   contentSecurityPolicy: env.NODE_ENV !== 'development',
   crossOriginEmbedderPolicy: env.NODE_ENV !== 'development',

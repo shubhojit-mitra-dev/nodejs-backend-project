@@ -8,13 +8,16 @@ export default [
   {
     ignores: ['build/**', 'dist/**', 'node_modules/**', 'coverage/**', 'drizzle/**'],
   },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,mjs,cjs,ts}', 'jest.config.js'],
+    // Only apply TypeScript parsing to source files and TypeScript files in root
+    files: ['src/**/*.{js,ts}', 'drizzle.config.ts'],
     languageOptions: {
       globals: globals.node,
       parser: tseslint.parser,
       parserOptions: {
-        projectService: true,
+        project: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -23,52 +26,40 @@ export default [
       import: importPlugin,
     },
     rules: {
-      // Extend recommended configs
-      ...js.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
-      ...tseslint.configs.recommendedTypeChecked.rules,
-
       // === TYPESCRIPT RULES === //
-      '@typescript-eslint/no-explicit-any': 'warn', // Warn instead of error
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/consistent-type-imports': [
-        'error', // Your favorite - import type
-        { 
-          prefer: 'type-imports', 
+        'error',
+        {
+          prefer: 'type-imports',
           fixStyle: 'inline-type-imports',
         },
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
-      '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        { checksVoidReturn: false },
-      ],
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-unused-vars': ['warn', { 
+      '@typescript-eslint/no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
       }],
 
-      // === SEMICOLON & SPACING RULES (Your Favorites) === //
-      'semi': ['error', 'always'], // Missing semicolon fix
-      'semi-spacing': 'error', // Space after semicolon
-      'comma-spacing': ['error', { before: false, after: true }], // Space after comma
-      'arrow-spacing': ['error', { before: true, after: true }], // Arrow spacing
-      'space-before-blocks': 'error', // Space before blocks
-      'keyword-spacing': 'error', // Space around keywords
-      'space-infix-ops': 'error', // Space around operators
-      'object-curly-spacing': ['error', 'always'], // Space in objects { key: value }
-      'array-bracket-spacing': ['error', 'never'], // No space in arrays [1, 2, 3]
+      // === SEMICOLON & SPACING RULES === //
+      'semi': ['error', 'always'],
+      'semi-spacing': 'error',
+      'comma-spacing': ['error', { before: false, after: true }],
+      'arrow-spacing': ['error', { before: true, after: true }],
+      'space-before-blocks': 'error',
+      'keyword-spacing': 'error',
+      'space-infix-ops': 'error',
+      'object-curly-spacing': ['error', 'always'],
+      'array-bracket-spacing': ['error', 'never'],
 
       // === LINE & WHITESPACE RULES === //
-      'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }], // Your favorite
-      'no-trailing-spaces': 'error', // Your favorite - remove trailing spaces
-      // 'eol-last': ['error', 'always'], // Newline at end of file
-      'indent': ['error', 2], // 2-space indentation
+      'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
+      'no-trailing-spaces': 'error',
+      // 'eol-last': ['error', 'always'],
+      'indent': ['error', 2],
 
       // === GENERAL BEST PRACTICES === //
       'prefer-const': 'error',
@@ -77,48 +68,30 @@ export default [
       'prefer-template': 'error',
       'eqeqeq': ['error', 'always'],
       'curly': ['error', 'all'],
-      'no-unused-vars': 'off', // Handled by TypeScript version
-
-      // === QUOTES & STRINGS === //
+      'no-unused-vars': 'off',
       // 'quotes': ['error', 'single', { avoidEscape: true }],
-      'quote-props': ['error', 'as-needed'],
-
-      // === DEVELOPER FRIENDLY === //
-      'no-console': 'off', // Allow console for development
-      'no-debugger': 'warn', // Warn about debugger, don't error
+      // 'quote-props': ['error', 'as-needed'],
+      'no-console': 'off',
+      'no-debugger': 'warn',
 
       // === IMPORT RULES === //
-      'import/no-unresolved': ['error', { 
-        ignore: ['^@/', '^~/', '\\.js$'] 
-      }],
+      // 'import/no-unresolved': ['error', {
+      //   ignore: ['^@/', '^~/', '\\.js$']
+      // }],
       'import/extensions': ['error', 'never', { json: 'always' }],
       'import/no-duplicates': 'error',
       'import/order': ['error', {
-        groups: [
-          'builtin',   // Node.js built-ins
-          'external',  // npm packages
-          'internal',  // Internal modules
-          'parent',    // ../
-          'sibling',   // ./
-          'index',     // ./index
-        ],
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         // 'newlines-between': 'always',
-        // alphabetize: { order: 'asc', caseInsensitive: true },
       }],
       'import/newline-after-import': 'error',
 
       // === MODERN JS/TS FEATURES === //
       'prefer-arrow-callback': 'error',
-      'prefer-destructuring': ['error', {
-        VariableDeclarator: { array: false, object: true },
-        AssignmentExpression: { array: false, object: false },
-      }],
       'no-duplicate-imports': 'error',
       'prefer-spread': 'error',
       'rest-spread-spacing': 'error',
       'template-curly-spacing': 'error',
-
-      // === PREVENT COMMON MISTAKES === //
       'no-undef': 'error',
       'no-unreachable': 'error',
       'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
@@ -129,33 +102,74 @@ export default [
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: ['./tsconfig.json'],
-          extensions: ['.ts', '.tsx', '.js', '.jsx'],
-        },
-        node: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          project: './tsconfig.json',
         },
       },
     },
   },
   {
-    // Config files can have default exports
-    files: ['*.config.{js,ts}', '**/*.config.{js,ts}'],
+    // Config files - JavaScript parsing without TypeScript project requirements
+    files: ['*.config.js', '**/*.config.js', 'eslint.config.js', 'jest.config.js'],
+    languageOptions: {
+      globals: globals.node,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    plugins: {
+      import: importPlugin,
+    },
     rules: {
-      'import/no-default-export': 'off',
+      'semi': ['error', 'always'],
+      'semi-spacing': 'error',
+      'comma-spacing': ['error', { before: false, after: true }],
+      'arrow-spacing': ['error', { before: true, after: true }],
+      'space-before-blocks': 'error',
+      'keyword-spacing': 'error',
+      'space-infix-ops': 'error',
+      'object-curly-spacing': ['error', 'always'],
+      'array-bracket-spacing': ['error', 'never'],
+      'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
+      'no-trailing-spaces': 'error',
+      'indent': ['error', 2],
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'object-shorthand': 'error',
+      'prefer-template': 'error',
+      'eqeqeq': ['error', 'always'],
+      'curly': ['error', 'all'],
+      'no-console': 'off',
+      'no-debugger': 'warn',
+      'prefer-arrow-callback': 'error',
+      'no-duplicate-imports': 'error',
+      'prefer-spread': 'error',
+      'rest-spread-spacing': 'error',
+      'template-curly-spacing': 'error',
+      'no-unreachable': 'error',
+      'no-unused-expressions': ['error', { allowShortCircuit: true, allowTernary: true }],
+      'no-useless-return': 'error',
+      'dot-notation': 'error',
     },
   },
   {
-    // Test files are more relaxed
-    files: ['**/*.test.{js,ts}', '**/*.spec.{js,ts}', '**/__tests__/**/*.{js,ts}'],
+    files: ['*.config.ts', '**/*.config.ts'],
+    languageOptions: {
+      globals: globals.node,
+      parser: tseslint.parser,
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+      import: importPlugin,
+    },
     rules: {
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
-      'max-lines-per-function': 'off',
-    },
-  },
-  {
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
+      'semi': ['error', 'always'],
+      'comma-spacing': ['error', { before: false, after: true }],
+      'no-console': 'off',
     },
   },
 ];

@@ -6,7 +6,8 @@
     "scripts": {
         "start": "tsx dist/index.js",
         "dev": "nodemon",
-        "lint": "eslint --ext .ts,.js src/",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
         "ts-check": "tsc --noEmit",
         "build": "pnpm lint && tsc -p tsconfig.app.json"
     },
