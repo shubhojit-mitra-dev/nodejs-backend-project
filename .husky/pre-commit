@@ -1,4 +1,24 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo "Running pre-commit checks..."
+echo ""
+# Type checking for the entire project
+echo "[TYPE CHECK] Checking TypeScript types..."
+pnpm ts-check
+if [ $? -ne 0 ]; then
+  echo "Type checking failed. Please fix TypeScript errors before committing."
+  exit 1
+fi
+echo "Type checking passed!"
+echo ""
 
-npm run pre-commit
+echo "Checking code quality..."
+pnpm pre-commit
+pnpm lint
+if [ $? -ne 0 ]; then
+  echo "Backend code quality checks failed"
+  exit 1
+fi
+echo "Lint checks passed!"
+
+echo ""
+echo "All pre-commit checks passed! Proceeding with commit..."
+echo ""
