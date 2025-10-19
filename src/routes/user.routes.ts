@@ -1,7 +1,7 @@
-import express, { Router } from 'express';
+import express, { type Router } from 'express';
 import { baseAPIHandler } from '@/controllers/user.controller';
 
-const router: Router = express.Router()
+const router: Router = express.Router();
 
 router.route("/").get(baseAPIHandler);
 
