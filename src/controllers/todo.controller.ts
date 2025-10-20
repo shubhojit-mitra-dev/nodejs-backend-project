@@ -3,6 +3,19 @@
  * Note from the Developer
  * -----------------------
  *
+ * Please make sure you are not using console.log statements for logging.
+ * Instead, utilize the configured Winston logger available from '@/core/logger'.
+ * This ensures consistent logging practices across the application.
+ * The logger is set up to handle different log levels and formats based on the environment.
+ *
+ * @example:
+ * import logger from '@/core/logger';
+ * logger.info('User created successfully');
+ * logger.error('Database connection failed');
+ * logger.debug('Debugging info here');
+ *
+ * -----------------------
+ *
  * Make sure to utilize the asyncHandler utility to wrap your async route handlers.
  * This helps in catching errors in async functions and passing them to the error middleware.
  * This utility is made to abstract repetitive try-catch blocks in async route handlers.
