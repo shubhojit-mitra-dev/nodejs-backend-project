@@ -1,48 +1,61 @@
 {
-    "name": "nodejs-backend-project",
-    "version": "1.0.0",
-    "description": "",
-    "main": "dist/index.js",
-    "scripts": {
-        "start": "tsx dist/index.js",
-        "dev": "nodemon",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "ts-check": "tsc --noEmit",
-        "build": "pnpm lint && tsc -p tsconfig.app.json"
-    },
-    "keywords": [],
-    "author": "Shubhojit Mitra <Shubhojit.120225@stu.upes.ac.in>",
-    "type": "module",
-    "license": "ISC",
-    "dependencies": {
-        "bcrypt": "^6.0.0",
-        "cors": "2.8.5",
-        "dotenv": "17.2.3",
-        "express": "5.1.0",
-        "express-async-handler": "^1.2.0",
-        "helmet": "8.1.0",
-        "jsonwebtoken": "^9.0.2",
-        "pg": "^8.16.3",
-        "zod": "^4.1.12"
-    },
-    "devDependencies": {
-        "@eslint/js": "9.38.0",
-        "@types/bcrypt": "^6.0.0",
-        "@types/cors": "2.8.19",
-        "@types/express": "4.17.21",
-        "@types/jsonwebtoken": "^9.0.10",
-        "@types/node": "24.8.1",
-        "@types/pg": "^8.15.5",
-        "eslint": "9.38.0",
-        "eslint-import-resolver-node": "^0.3.9",
-        "eslint-import-resolver-typescript": "^4.4.4",
-        "eslint-plugin-import": "^2.32.0",
-        "globals": "16.4.0",
-        "nodemon": "^3.1.10",
-        "tsc-alias": "1.8.16",
-        "tsx": "4.20.6",
-        "typescript": "5.9.3",
-        "typescript-eslint": "8.46.1"
-    }
+  "name": "nodejs-backend-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsx dist/index.js",
+    "dev": "nodemon",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "ts-check": "tsc --noEmit",
+    "build": "pnpm lint && tsc -p tsconfig.app.json",
+    "prepare": "husky",
+    "pre-commit": "lint-staged"
+  },
+  "keywords": [],
+  "author": "Shubhojit Mitra <Shubhojit.120225@stu.upes.ac.in>",
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "2.8.5",
+    "dotenv": "17.2.3",
+    "express": "5.1.0",
+    "express-async-handler": "^1.2.0",
+    "helmet": "8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.38.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "2.8.19",
+    "@types/express": "4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "24.8.1",
+    "@types/pg": "^8.15.5",
+    "eslint": "9.38.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "16.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "tsc-alias": "1.8.16",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.1"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "*.{ts,js,json,md}": [
+      "prettier --write"
+    ]
+  }
 }
