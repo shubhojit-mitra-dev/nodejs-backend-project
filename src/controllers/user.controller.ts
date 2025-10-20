@@ -1,5 +1,47 @@
-import type { Request, Response } from 'express';
+/**
+ * ----------------------
+ * Note from the Developer
+ * -----------------------
+ *
+ * Make sure to utilize the asyncHandler utility to wrap your async route handlers.
+ * This helps in catching errors in async functions and passing them to the error middleware.
+ * This utility is made to abstract repetitive try-catch blocks in async route handlers.
+ * And maintain type safety across the application.
+ *
+ * Instead of this:
+ * @example:
+ * import { ErrorHandler } from '@/middlewares/error';
+ * router.get('/users', async (req, res, next) => {
+ *   try {
+ *     const users = await getUsers();
+ *     res.status(200).json({
+ *       success: true,
+ *       message: 'Users retrieved',
+ *       data: users
+ *     });
+ *   } catch (error) {
+ *     next(new ErrorHandler('Failed to get users', 500, ErrorType.DATABASE_ERROR));
+ *   }
+ * });
+ *
+ * Use this:
+ * @example:
+ * import { asyncHandler } from '@/utils/asyncHandler';
+ * router.get('/users', asyncHandler(async () => {
+ *   const users = await getUsers();
+ *   return Response.success(users, 'Users retrieved');
+ * }));
+ *
+ * This ensures any error thrown in the async function is caught and passed to the error handling middleware.
+ * This keeps the code clean and consistent.
+ * So that Developers don't have to manually write try-catch blocks for every async route handler.
+ * This improves maintainability and readability of the codebase.
+ * And enhances developer experience by reducing boilerplate code.
+ */
 
-export const baseAPIHandler = (_req: Request, res: Response) => {
+import type { Request, Response } from 'express';
+import { asyncHandler } from '@/utils/asyncHandler';
+
+export const baseAPIHandler = asyncHandler(async (req: Request, res: Response) => {
   res.json({ message: 'Hello from the User API' });
-};
+});

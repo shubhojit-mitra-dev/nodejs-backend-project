@@ -15,7 +15,7 @@
  * @requires @/middlewares/error
  * @exports app - Configured Express application
  */
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
@@ -24,6 +24,7 @@ import userRoutes from '@/routes/user.routes';
 import contactRoutes from '@/routes/todo.routes';
 import { errorMiddleware } from '@/middlewares/error';
 import { swaggerSpec } from '@/core/swagger';
+import { asyncHandler } from '@/utils/asyncHandler';
 
 // Initialize Express app
 const app: express.Application = express();
@@ -46,9 +47,12 @@ app.use(
 );
 
 // Basic route for health check
-app.get('/', (_req, res) => {
-  res.json({ message: 'Hello from the backend API' });
-});
+app.get(
+  '/',
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.json({ status: 'healthy', message: `Visit API documentation at http://localhost:${env.PORT}/api-docs` });
+  }),
+);
 
 /**
  * Swagger UI route
