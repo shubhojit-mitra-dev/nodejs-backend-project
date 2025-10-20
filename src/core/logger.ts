@@ -20,7 +20,6 @@
  * @requires winston
  * @requires winston-daily-rotate-file
  * @requires fs
- * @requires @/env
  * @exports logger - Configured Winston logger instance
  *
  * --- IGNORE ---
@@ -33,18 +32,17 @@
 import fs from 'fs';
 import { createLogger, format, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { env } from '@/env';
 
-// Ensure log directory exists
-const dir = env.LOG_DIR as string;
+// Use process.env directly to avoid circular dependency with @/env
+const dir = process.env.LOG_DIR ?? './logs';
 
 // Create log directory if it doesn't exist
 if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir);
+  fs.mkdirSync(dir, { recursive: true });
 }
 
 // Determine log level based on environment
-const logLevel = env.NODE_ENV === 'development' ? 'debug' : 'warn';
+const logLevel = process.env.NODE_ENV === 'development' ? 'debug' : 'warn';
 
 /**
  * Custom format for console output in development

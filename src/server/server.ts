@@ -18,10 +18,12 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import swaggerUi from 'swagger-ui-express';
 import { env } from '@/env';
 import userRoutes from '@/routes/user.routes';
 import contactRoutes from '@/routes/todo.routes';
 import { errorMiddleware } from '@/middlewares/error';
+import { swaggerSpec } from '@/core/swagger';
 
 // Initialize Express app
 const app: express.Application = express();
@@ -47,6 +49,12 @@ app.use(
 app.get('/', (_req, res) => {
   res.json({ message: 'Hello from the backend API' });
 });
+
+/**
+ * Swagger UI route
+ * - Exposes the API documentation at /api-docs
+ */
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /**
  * API Routes
