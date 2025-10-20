@@ -1,21 +1,21 @@
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: todo-app  # Fixed: underscore instead of hyphen
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./:/app
-    environment:
-      - DATABASE_URL=postgresql://postgresuser:postgrespassword@postgres:5432/db_postgres
-      - NODE_ENV=development
-      - CORS_URL=http://localhost:3000
-    depends_on:
-      - postgres
-    networks:
-      - todo-network
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: todo-app  # Fixed: underscore instead of hyphen
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - ./:/app
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgresuser:postgrespassword@postgres:5432/db_postgres
+  #     - NODE_ENV=development
+  #     - CORS_URL=http://localhost:3000
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - todo-network
 
   postgres:
     image: postgres:18
@@ -29,12 +29,12 @@ services:
       POSTGRES_DB: db_postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - todo-network
+    # networks:
+    #   - todo-network
 
 volumes:
   postgres_data:
   
-networks:
-  todo-network:
-    driver: bridge
+# networks:
+#   todo-network:
+#     driver: bridge

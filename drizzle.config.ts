@@ -6,7 +6,7 @@ import { defineConfig } from 'drizzle-kit';
 // - `out` is where generated SQL migrations will be placed.
 // - `dbCredentials.url` uses process.env.DATABASE_URL (set in .env / docker-compose).
 export default defineConfig({
-  schema: './src/db/schemas/*.schema.ts',
+  schema: './src/db/schemas/index.ts',
   out: './drizzle',
   dialect: 'postgresql',
   driver: 'pglite',
