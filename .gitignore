@@ -107,7 +107,7 @@ junit.xml
 jest-coverage/
 
 # Drizzle
-drizzle/
+# drizzle/
 
 # Build outputs
 build/
