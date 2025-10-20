@@ -21,6 +21,7 @@ import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { env } from '@/env';
 import userRoutes from '@/routes/user.routes';
+import authRoutes from '@/routes/auth.routes';
 import contactRoutes from '@/routes/todo.routes';
 import { errorMiddleware } from '@/middlewares/error';
 import { swaggerSpec } from '@/core/swagger';
@@ -67,6 +68,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
  */
 app.use('/api/users', userRoutes);
 app.use('/api/todos', contactRoutes);
+app.use('/api/auth', authRoutes);
 
 /**
  * 404 Handler
