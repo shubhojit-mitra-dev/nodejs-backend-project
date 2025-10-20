@@ -75,7 +75,7 @@ export default [
       'no-debugger': 'warn',
 
       // === IMPORT RULES === //
-      'import/extensions': ['error', 'never', { json: 'always' }],
+      // 'import/extensions': ['error', 'never', { json: 'always' }],
       'import/no-duplicates': 'error',
       'import/order': [
         'error',
