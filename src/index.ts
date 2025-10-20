@@ -20,8 +20,8 @@ import logger from './core/logger';
  * These are fatal errors that would crash the app
  */
 process.on('uncaughtException', (err: Error) => {
-  console.error('Uncaught Exception:', err.message);
-  console.error(err.stack);
+  logger.error('Uncaught Exception:', err.message);
+  logger.error(err.stack);
   process.exit(1); // Exit immediately for safety
 });
 
@@ -30,7 +30,7 @@ process.on('uncaughtException', (err: Error) => {
  * Covers async failures not caught in try/catch
  */
 process.on('unhandledRejection', (reason: unknown) => {
-  console.error('Unhandled Promise Rejection:', reason);
+  logger.error('Unhandled Promise Rejection:', reason);
   process.exit(1);
 });
 
