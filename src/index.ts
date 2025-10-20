@@ -13,6 +13,7 @@ import { env } from '@/env';
 import app from '@/server/server';
 import { initDb } from '@/db';
 import ErrorHandler from '@/utils/errorHandler';
+import logger from './core/logger';
 
 /**
  * Handle uncaught synchronous exceptions
@@ -46,7 +47,8 @@ async function startServer() {
 
     const PORT = env.PORT;
     app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT} [${env.NODE_ENV}]`);
+      // console.log(`Server running at http://localhost:${PORT} [${env.NODE_ENV}]`);
+      logger.info(`Server started on port ${PORT} in ${env.NODE_ENV} mode`);
     });
   } catch (error: unknown) {
     /**
@@ -60,8 +62,8 @@ async function startServer() {
           stack: (error as Error).stack,
         });
 
-    console.error('Startup Error:', startupError.message);
-    console.error(startupError.metadata);
+    logger.error('Startup Error:', startupError.message);
+    logger.error(startupError.metadata);
     process.exit(1);
   }
 }

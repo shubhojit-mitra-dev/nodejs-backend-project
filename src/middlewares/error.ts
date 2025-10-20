@@ -13,7 +13,7 @@
  */
 import type { Request, Response, NextFunction } from 'express';
 import type ErrorHandler from '@/utils/errorHandler';
-import { ErrorType } from '@/types/error';
+import { ErrorType, type ErrorResponse } from '@/types/error';
 import { env } from '@/env';
 
 // Determine if the environment is development
@@ -44,7 +44,7 @@ export const errorMiddleware = (err: ErrorHandler, req: Request, res: Response, 
    * @property {string} [path] - Request path (only in development)
    * @property {string} [method] - HTTP method (only in development)
    */
-  const response: object = {
+  const response: ErrorResponse = {
     success: false,
     message,
     type: err.errorType || ErrorType.UNKNOWN,
