@@ -13,12 +13,13 @@ const swaggerOptions: swaggerJSDoc.Options = {
   swaggerDefinition: {
     openapi: '3.0.3',
     info: {
-      title: 'NodeJS Backend API',
+      title: 'Node.js Backend API',
       version: '1.0.0',
       description: 'API documentation for NodeJS Backend project using Express and Drizzle ORM',
       contact: {
         name: 'Shubhojit Mitra',
         email: 'Shubhojit.120225@stu.upes.ac.in',
+        url: 'https://shubhojitmitra.live',
       },
     },
     servers: [
