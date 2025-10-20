@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "ts-check": "tsc --noEmit",
     "build": "pnpm lint && tsc -p tsconfig.app.json",
+    "preview": "pnpm build && pnpm start",
     "prepare": "husky",
     "pre-commit": "lint-staged"
   },
