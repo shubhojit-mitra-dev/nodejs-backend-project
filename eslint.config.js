@@ -11,8 +11,8 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    // Only apply TypeScript parsing to source files and TypeScript files in root
-    files: ['src/**/*.{js,ts}', 'drizzle.config.ts'],
+    // Only apply TypeScript parsing to source files
+    files: ['src/**/*.{js,ts}'],
     languageOptions: {
       globals: globals.node,
       parser: tseslint.parser,
@@ -39,13 +39,16 @@ export default [
       ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
-      '@typescript-eslint/no-unused-vars': ['warn', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
 
       // === SEMICOLON & SPACING RULES === //
-      'semi': ['error', 'always'],
+      semi: ['error', 'always'],
       'semi-spacing': 'error',
       'comma-spacing': ['error', { before: false, after: true }],
       'arrow-spacing': ['error', { before: true, after: true }],
@@ -58,32 +61,28 @@ export default [
       // === LINE & WHITESPACE RULES === //
       'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
       'no-trailing-spaces': 'error',
-      // 'eol-last': ['error', 'always'],
-      'indent': ['error', 2],
+      indent: ['error', 2],
 
       // === GENERAL BEST PRACTICES === //
       'prefer-const': 'error',
       'no-var': 'error',
       'object-shorthand': 'error',
       'prefer-template': 'error',
-      'eqeqeq': ['error', 'always'],
-      'curly': ['error', 'all'],
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
       'no-unused-vars': 'off',
-      // 'quotes': ['error', 'single', { avoidEscape: true }],
-      // 'quote-props': ['error', 'as-needed'],
       'no-console': 'off',
       'no-debugger': 'warn',
 
       // === IMPORT RULES === //
-      // 'import/no-unresolved': ['error', {
-      //   ignore: ['^@/', '^~/', '\\.js$']
-      // }],
       'import/extensions': ['error', 'never', { json: 'always' }],
       'import/no-duplicates': 'error',
-      'import/order': ['error', {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        // 'newlines-between': 'always',
-      }],
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        },
+      ],
       'import/newline-after-import': 'error',
 
       // === MODERN JS/TS FEATURES === //
@@ -119,7 +118,7 @@ export default [
       import: importPlugin,
     },
     rules: {
-      'semi': ['error', 'always'],
+      semi: ['error', 'always'],
       'semi-spacing': 'error',
       'comma-spacing': ['error', { before: false, after: true }],
       'arrow-spacing': ['error', { before: true, after: true }],
@@ -130,13 +129,13 @@ export default [
       'array-bracket-spacing': ['error', 'never'],
       'no-multiple-empty-lines': ['error', { max: 2, maxEOF: 1 }],
       'no-trailing-spaces': 'error',
-      'indent': ['error', 2],
+      indent: ['error', 2],
       'prefer-const': 'error',
       'no-var': 'error',
       'object-shorthand': 'error',
       'prefer-template': 'error',
-      'eqeqeq': ['error', 'always'],
-      'curly': ['error', 'all'],
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
       'no-console': 'off',
       'no-debugger': 'warn',
       'prefer-arrow-callback': 'error',
@@ -151,13 +150,14 @@ export default [
     },
   },
   {
-    files: ['*.config.ts', '**/*.config.ts'],
+    // Root-level TypeScript config files - parsed without project reference
+    files: ['*.config.ts', 'drizzle.config.ts'],
     languageOptions: {
       globals: globals.node,
       parser: tseslint.parser,
       parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: 'latest',
+        sourceType: 'module',
       },
     },
     plugins: {
@@ -167,9 +167,23 @@ export default [
     rules: {
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
-      'semi': ['error', 'always'],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+      semi: ['error', 'always'],
       'comma-spacing': ['error', { before: false, after: true }],
       'no-console': 'off',
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'object-shorthand': 'error',
+      'prefer-template': 'error',
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
+      'no-unused-vars': 'off',
     },
   },
 ];
