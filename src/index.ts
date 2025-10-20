@@ -13,14 +13,15 @@ import { env } from '@/env';
 import app from '@/server/server';
 import { initDb } from '@/db';
 import ErrorHandler from '@/utils/errorHandler';
+import logger from './core/logger';
 
 /**
  * Handle uncaught synchronous exceptions
  * These are fatal errors that would crash the app
  */
 process.on('uncaughtException', (err: Error) => {
-  console.error('Uncaught Exception:', err.message);
-  console.error(err.stack);
+  logger.error('Uncaught Exception:', err.message);
+  logger.error(err.stack);
   process.exit(1); // Exit immediately for safety
 });
 
@@ -29,7 +30,7 @@ process.on('uncaughtException', (err: Error) => {
  * Covers async failures not caught in try/catch
  */
 process.on('unhandledRejection', (reason: unknown) => {
-  console.error('Unhandled Promise Rejection:', reason);
+  logger.error('Unhandled Promise Rejection:', reason);
   process.exit(1);
 });
 
@@ -46,7 +47,8 @@ async function startServer() {
 
     const PORT = env.PORT;
     app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT} [${env.NODE_ENV}]`);
+      // console.log(`Server running at http://localhost:${PORT} [${env.NODE_ENV}]`);
+      logger.info(`Server started on port ${PORT} in ${env.NODE_ENV} mode`);
     });
   } catch (error: unknown) {
     /**
@@ -60,8 +62,8 @@ async function startServer() {
           stack: (error as Error).stack,
         });
 
-    console.error('Startup Error:', startupError.message);
-    console.error(startupError.metadata);
+    logger.error('Startup Error:', startupError.message);
+    logger.error(startupError.metadata);
     process.exit(1);
   }
 }

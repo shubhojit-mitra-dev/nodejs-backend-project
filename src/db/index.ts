@@ -11,6 +11,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { env } from '@/env';
+import logger from '@/core/logger';
 import * as schema from './schemas';
 
 const connectionString = env.DATABASE_URL as string;
@@ -36,10 +37,10 @@ export { pool };
 export async function initDb() {
   try {
     const client = await pool.connect();
-    console.log('Database connected successfully');
+    logger.info('Database connected successfully');
     client.release();
   } catch (error) {
-    console.error('Database connection failed:', error);
+    logger.error('Database connection failed:', error);
     process.exit(1); // Stop app if DB fails to connect
   }
 }

@@ -21,6 +21,7 @@
  */
 import { z } from 'zod';
 import dotenv from 'dotenv';
+import logger from './core/logger';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -32,6 +33,7 @@ dotenv.config();
  * @property {string} NODE_ENV - Application environment
  * @property {string} CORS_URL - Allowed CORS origin URL
  * @property {string} DATABASE_URL - Database connection URL
+ * @property {string} LOG_DIR - Directory for log files
  * @throws Will exit the process if validation fails
  * @returns {object} Validated environment variables
  */
@@ -40,6 +42,7 @@ const envSchema: z.ZodObject = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   CORS_URL: z.url('CORS_URL must be a valid URL').default('http://localhost:3000'),
   DATABASE_URL: z.url('DATABASE_URL must be a valid URL'),
+  LOG_DIR: z.string().default('logs'),
 });
 
 /**
@@ -54,15 +57,16 @@ const validateEnv = () => {
       NODE_ENV: process.env.NODE_ENV,
       CORS_URL: process.env.CORS_URL,
       DATABASE_URL: process.env.DATABASE_URL,
+      LOG_DIR: process.env.LOG_DIR,
     });
   } catch (error) {
     console.error('Invalid environment variables:');
     if (error instanceof z.ZodError) {
       error.issues.forEach(err => {
-        console.error(`- ${err.path.join('.')}: ${err.message}`);
+        logger.error(`- ${err.path.join('.')}: ${err.message}`);
       });
     } else {
-      console.error(error);
+      logger.error(error);
     }
     process.exit(1);
   }
