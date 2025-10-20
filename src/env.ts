@@ -60,7 +60,7 @@ const validateEnv = () => {
       LOG_DIR: process.env.LOG_DIR,
     });
   } catch (error) {
-    console.error('Invalid environment variables:');
+    logger.error('Invalid environment variables:');
     if (error instanceof z.ZodError) {
       error.issues.forEach(err => {
         logger.error(`- ${err.path.join('.')}: ${err.message}`);
