@@ -13,7 +13,7 @@ import { Pool } from 'pg';
 import { env } from '@/env';
 import * as schema from './schemas';
 
-const connectionString = env.DATABASE_URL;
+const connectionString = env.DATABASE_URL as string;
 
 // Create a connection pool (Singleton)
 const pool = new Pool({
