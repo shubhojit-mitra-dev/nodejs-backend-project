@@ -11,7 +11,8 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { env } from '@/env';
-import * as schema from './schemas';
+import * as userSchema from './schemas/user.schema';
+import * as todoSchema from './schemas/todo.schema';
 
 const connectionString = env.DATABASE_URL;
 
@@ -21,7 +22,13 @@ const pool = new Pool({
 });
 
 // Initialize Drizzle ORM with the pool and schema
-export const db = drizzle(pool, { schema });
+export const db = drizzle(pool, {
+  schema: {
+    user: userSchema,
+    todo: todoSchema,
+  },
+  logger: true,
+});
 
 // Export the pool if raw queries are needed
 export { pool };
