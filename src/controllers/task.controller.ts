@@ -56,5 +56,5 @@ import type { Request, Response } from 'express';
 import { asyncHandler } from '@/utils/asyncHandler';
 
 export const baseAPIHandler = asyncHandler(async (req: Request, res: Response) => {
-  res.json({ message: 'Hello from the Todo API' });
+  res.json({ message: 'Hello from the Task API' });
 });

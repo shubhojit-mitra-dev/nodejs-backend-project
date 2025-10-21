@@ -6,17 +6,17 @@
  */
 
 import express, { type Router } from 'express';
-import { baseAPIHandler } from '@/controllers/todo.controller';
+import { baseAPIHandler } from '@/controllers/task.controller';
 
 const router: Router = express.Router();
 
 /**
  * @openapi
- * /api/todos:
+ * /api/tasks:
  *   get:
- *     summary: Get a simple test message from the Todo API
+ *     summary: Get a simple test message from the Task API
  *     tags:
- *       - Todos
+ *       - Tasks
  *     responses:
  *       200:
  *         description: Returns a welcome message
@@ -27,7 +27,7 @@ const router: Router = express.Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Hello from the Todo API
+ *                   example: Hello from the Task API
  */
 router.route('/').get(baseAPIHandler);
 
