@@ -13,9 +13,9 @@ const swaggerOptions: swaggerJSDoc.Options = {
   swaggerDefinition: {
     openapi: '3.0.3',
     info: {
-      title: 'Node.js Backend API',
+      title: 'Tasks Backend API Documentation',
       version: '1.0.0',
-      description: 'API documentation for NodeJS Backend project using Express and Drizzle ORM',
+      description: 'API documentation for Task Management System',
       contact: {
         name: 'Shubhojit Mitra',
         email: 'Shubhojit.120225@stu.upes.ac.in',
