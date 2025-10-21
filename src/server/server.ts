@@ -64,7 +64,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 /**
  * API Routes
  * - User routes at /api/users
- * - Todo routes at /api/todos
+ * - Task routes at /api/tasks
  */
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
