@@ -49,7 +49,70 @@ A comprehensive task management API built with modern technologies and following
 
 Our application uses a comprehensive PostgreSQL schema designed for scalability and modern authentication:
 
-![Database Schema](./public/db-schema.png)
+```mermaid
+erDiagram
+
+    USERS {
+        string id PK
+        string name
+        string email "unique"
+        string password
+        string role
+        string profile_picture_url
+        boolean google_connected
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    AUTH_TOKENS {
+        string id PK
+        string userId FK
+        text access_token
+        text refresh_token
+        string provider
+        timestamp expiresAt
+        timestamp createdAt
+    }
+
+    TASKS {
+        string id PK
+        string userId FK
+        string title
+        text description
+        string status
+        timestamp startTime
+        timestamp endTime
+        string calendar_event_id
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    OTP_CODES {
+        string id PK
+        string userId FK
+        string code
+        string type
+        timestamp expiresAt
+        timestamp createdAt
+    }
+
+    REPORTS {
+        string id PK
+        string userId FK
+        string title
+        string s3_url
+        text ai_summary
+        string status
+        timestamp createdAt
+    }
+
+    %% Relationships
+    USERS ||--o{ AUTH_TOKENS : "has"
+    USERS ||--o{ TASKS : "creates"
+    USERS ||--o{ OTP_CODES : "receives"
+    USERS ||--o{ REPORTS : "generates"
+
+```
 
 ### Schema Overview
 
