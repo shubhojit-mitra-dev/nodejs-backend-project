@@ -32,7 +32,7 @@ import { users } from '@/db/schemas';
 import { asyncHandler, Response, validate } from '@/utils/asyncHandler';
 import ErrorHandler from '@/utils/errorHandler';
 import { SignupSchema } from '@/utils/validations';
-import { hashPassword } from '@/utils/hashing';
+import { hashPassword } from '@/utils/helpers';
 
 /**
  * Signup Handler
