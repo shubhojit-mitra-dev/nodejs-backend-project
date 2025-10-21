@@ -135,3 +135,5 @@ Thumbs.db
 # Logs
 logs
 *.log
+
+toggle-git.sh
