@@ -1,5 +1,5 @@
 import express, { type Router } from 'express';
-import { loginhandler, signuphandler } from '@/controllers/auth.controller';
+import { signupHandlerWithValidation } from '@/controllers/auth.controller';
 
 const router: Router = express.Router();
 
@@ -52,8 +52,8 @@ const router: Router = express.Router();
  *                       format: email
  *                       example: john@example.com
  */
-router.route('/signup').post(signuphandler);
+router.route('/signup').post(signupHandlerWithValidation);
 
-router.route('/login').post(loginhandler);
+// router.route('/login').post(loginhandler);
 
 export default router;
