@@ -59,9 +59,6 @@ const validateEnv = () => {
       CORS_URL: process.env.CORS_URL,
       DATABASE_URL: process.env.DATABASE_URL,
       JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-      JWT_REFRESH_SECRET_KEY: process.env.JWT_REFRESH_SECRET_KEY,
-      JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES,
-      JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES,
       LOG_DIR: process.env.LOG_DIR,
     });
   } catch (error) {
