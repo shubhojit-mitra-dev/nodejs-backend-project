@@ -122,7 +122,7 @@ export const loginHandler = asyncHandler(async (req: ExpressRequest, res: Expres
     throw ErrorHandler.AuthError('Invalid password');
   }
 
-  // created cookie with jwt and return user details without password
+  // created cookie with jwt and return user after login
   const { password: _p, ...userSafe } = userExists[0];
   const token = generateJWTandSetCookie(res, String(userExists[0].id));
 
