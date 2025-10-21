@@ -1,9 +1,14 @@
 // Export all schemas from a single file
 export * from './user.schema';
-export * from './todo.schema';
+export * from './task.schema';
+export * from './auth-token.schema';
+export * from './otp-code.schema';
+export * from './report.schema';
 
 /**
- * This is a NOTE from the developer:
+ * -----------------------
+ * NOTE from the developer
+ * -----------------------
  *
  * Do Make sure to run the following commands:
  * 1. pnpm db:generate - to generate migration files based on schema changes
