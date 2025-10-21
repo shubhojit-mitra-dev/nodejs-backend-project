@@ -42,6 +42,7 @@ const envSchema: z.ZodObject = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   CORS_URL: z.url('CORS_URL must be a valid URL').default('http://localhost:3000'),
   DATABASE_URL: z.url('DATABASE_URL must be a valid URL'),
+  JWT_SECRET_KEY: z.string().min(10, 'JWT_SECRET_KEY must be set and at least 10 characters long'),
   LOG_DIR: z.string().default('logs'),
 });
 
@@ -57,6 +58,10 @@ const validateEnv = () => {
       NODE_ENV: process.env.NODE_ENV,
       CORS_URL: process.env.CORS_URL,
       DATABASE_URL: process.env.DATABASE_URL,
+      JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+      JWT_REFRESH_SECRET_KEY: process.env.JWT_REFRESH_SECRET_KEY,
+      JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES,
+      JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES,
       LOG_DIR: process.env.LOG_DIR,
     });
   } catch (error) {

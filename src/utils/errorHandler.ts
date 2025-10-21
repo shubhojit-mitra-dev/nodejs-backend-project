@@ -15,7 +15,7 @@ export default class ErrorHandler extends Error {
   /**
    * Custom Error Handler
    * @param message - Error message
-   * @param statusCode - HTTP status code
+   * @param statusCoErrorHandlerde - HTTP status code
    * @param errorType - Type of error
    * @param metadata - Optional additional data
    */

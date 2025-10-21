@@ -1,5 +1,5 @@
 import express, { type Router } from 'express';
-import { signupHandlerWithValidation } from '@/controllers/auth.controller';
+import { loginHandler, signupHandlerWithValidation } from '@/controllers/auth.controller';
 
 const router: Router = express.Router();
 
@@ -54,6 +54,68 @@ const router: Router = express.Router();
  */
 router.route('/signup').post(signupHandlerWithValidation);
 
-// router.route('/login').post(loginhandler);
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     summary: Authenticate a user and return a JWT
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: StrongP@ssw0rd
+ *     responses:
+ *       200:
+ *         description: Authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     username:
+ *                       type: string
+ *                       example: johndoe
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       example: john@example.com
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid email or password
+ */
+router.route('/login').post(loginHandler);
 
 export default router;
