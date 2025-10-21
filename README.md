@@ -11,6 +11,7 @@ A comprehensive task management API built with modern technologies and following
 ## 📋 Table of Contents
 
 - [Tech Stack](#️-tech-stack)
+- [System Architecture](#️-system-architecture)
 - [Database Schema](#️-database-schema)
 - [Project Features](#-project-features)
 - [Development Team](#-development-team)
@@ -44,6 +45,41 @@ A comprehensive task management API built with modern technologies and following
 ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white)
 ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black)
 ![Husky](https://img.shields.io/badge/Husky-42B883?style=flat-square&logoColor=white)
+
+## 🏗️ System Architecture
+
+Our application follows a modern cloud-native microservices architecture designed for enterprise scalability and production deployment:
+
+![System Architecture](./public/system-architecture.png)
+
+### Architecture Components
+
+#### 🔐 **Security & DevOps Layer**
+
+- **Azure DevOps** - CI/CD pipelines with automated testing and deployment
+- **ECR (Elastic Container Registry)** - Docker image storage and versioning
+- **AWS KMS** - Secrets encryption and key management for all services
+- **API Gateway** - Rate limiting, request validation, and traffic management
+
+#### 🚀 **Core Application Infrastructure**
+
+- **VPC Subnet** - Isolated network environment for enhanced security
+- **Express.js API** - Main application server with TypeScript and robust middleware
+- **PostgreSQL RDS** - Managed database with automated backups and scaling
+- **Winston Logging** - Centralized logging with S3 backup synchronization
+
+#### 🤖 **AI & Processing Services**
+
+- **Task Queue System** - Asynchronous job processing and background tasks
+- **AWS Lambda** - Serverless report generation and data processing
+- **Python AI (Gemini)** - AI-powered insights, summaries, and analytics
+- **S3 Storage** - File storage for reports, images, and document management
+
+#### 🔗 **External Integrations**
+
+- **Google Calendar API** - Task synchronization and calendar management
+- **AWS SES** - Transactional emails, OTP delivery, and notifications
+- **Swagger UI** - Interactive API documentation and testing interface
 
 ## 🗄️ Database Schema
 
