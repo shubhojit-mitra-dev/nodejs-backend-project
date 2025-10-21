@@ -32,7 +32,8 @@ import { users } from '@/db/schemas';
 import { asyncHandler, Response, validate } from '@/utils/asyncHandler';
 import ErrorHandler from '@/utils/errorHandler';
 import { SignupSchema } from '@/utils/validations';
-import { hashPassword } from '@/utils/helpers';
+import { comparePasswords, hashPassword } from '@/utils/helpers';
+import { generateJWTandSetCookie } from '@/utils/jwt_session';
 
 /**
  * Signup Handler
@@ -107,8 +108,23 @@ export const signupHandlerWithValidation = [validate(data => SignupSchema.parse(
  * @exports loginHandler
  */
 export const loginHandler = asyncHandler(async (req: ExpressRequest, res: ExpressResponse) => {
-  return res.status(200).json({
-    success: true,
-    message: 'User logged in successfully',
-  });
+  const { email, password } = req.body;
+
+  // check if user exists
+  const userExists = await db.select().from(users).where(eq(users.email, email));
+  if (!userExists.length) {
+    throw ErrorHandler.AuthError('Invalid email');
+  }
+
+  // password verification
+  const ispass = await comparePasswords(password, userExists[0].password);
+  if (!ispass) {
+    throw ErrorHandler.AuthError('Invalid password');
+  }
+
+  // created cookie with jwt and return user after login
+  const { password: _p, ...userSafe } = userExists[0];
+  const token = generateJWTandSetCookie(res, String(userExists[0].id));
+
+  return Response.success({ token, user: userSafe }, 'Login successful');
 });
