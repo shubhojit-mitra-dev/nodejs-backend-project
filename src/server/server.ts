@@ -20,12 +20,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { env } from '@/env';
-import userRoutes from '@/routes/user.routes';
-import authRoutes from '@/routes/auth.routes';
-import contactRoutes from '@/routes/todo.routes';
 import { errorMiddleware } from '@/middlewares/error';
 import { swaggerSpec } from '@/core/swagger';
 import { asyncHandler } from '@/utils/asyncHandler';
+import userRoutes from '@/routes/user.routes';
+import authRoutes from '@/routes/auth.routes';
+import taskRoutes from '@/routes/task.routes';
 
 // Initialize Express app
 const app: express.Application = express();
@@ -64,10 +64,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 /**
  * API Routes
  * - User routes at /api/users
- * - Todo routes at /api/todos
+ * - Task routes at /api/tasks
  */
 app.use('/api/users', userRoutes);
-app.use('/api/todos', contactRoutes);
+app.use('/api/tasks', taskRoutes);
 app.use('/api/auth', authRoutes);
 
 /**
