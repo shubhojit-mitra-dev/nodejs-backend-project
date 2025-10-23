@@ -50,13 +50,13 @@ export async function authMiddleware(req: Request, _res: Response, next: NextFun
       return next(ErrorHandler.AuthError('Invalid token: user not found'));
     }
 
-    const { password, ...userSafe } = user as any;
+    const { password: _password, ...userSafe } = user as Record<string, unknown>;
 
     // attach to request (augmenting type via any to avoid type errors)
-    (req as any).user = userSafe;
+    (req as Request & { user?: Record<string, unknown> }).user = userSafe;
 
     return next();
-  } catch (err) {
+  } catch {
     return next(ErrorHandler.AuthError('Invalid or expired token'));
   }
 }
