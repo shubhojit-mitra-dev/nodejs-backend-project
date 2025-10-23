@@ -38,6 +38,7 @@ import { asyncHandler, Response, validate } from '@/utils/asyncHandler';
 import ErrorHandler from '@/utils/errorHandler';
 import { CreateTaskSchema, UpdateTaskSchema, TaskQuerySchema, TaskParamsSchema } from '@/utils/validations';
 import logger from '@/core/logger';
+import { authMiddleware } from '@/middlewares/auth.middleware';
 
 /**
  * Enhanced Request interface with authenticated user
@@ -61,9 +62,9 @@ const verifyUserAccess = (req: AuthenticatedRequest) => {
     throw ErrorHandler.AuthError('Authentication required');
   }
 
-  if (!req.user.isVerified) {
-    throw ErrorHandler.Forbidden('Email verification required to access tasks');
-  }
+  // if (!req.user.isVerified) {
+  //   throw ErrorHandler.Forbidden('Email verification required to access tasks');
+  // }
 
   logger.info('User access verified', {
     userId: req.user.id,
@@ -514,12 +515,28 @@ export const getTaskStatsHandler = asyncHandler(async (req: AuthenticatedRequest
 });
 
 // Export handlers with validation middleware
-export const createTaskWithValidation = [validate(data => CreateTaskSchema.parse(data)), createTaskHandler];
+export const createTaskWithValidation = [
+  validate(data => CreateTaskSchema.parse(data)),
+  authMiddleware,
+  createTaskHandler,
+];
 
-export const getTasksWithValidation = [validate(data => TaskQuerySchema.parse(data)), getTasksHandler];
+export const getTasksWithValidation = [validate(data => TaskQuerySchema.parse(data)), authMiddleware, getTasksHandler];
 
-export const updateTaskWithValidation = [validate(data => UpdateTaskSchema.parse(data)), updateTaskHandler];
+export const updateTaskWithValidation = [
+  validate(data => UpdateTaskSchema.parse(data)),
+  authMiddleware,
+  updateTaskHandler,
+];
 
-export const getTaskByIdWithValidation = [validate(data => TaskParamsSchema.parse(data)), getTaskByIdHandler];
+export const getTaskByIdWithValidation = [
+  validate(data => TaskParamsSchema.parse(data)),
+  authMiddleware,
+  getTaskByIdHandler,
+];
 
-export const deleteTaskWithValidation = [validate(data => TaskParamsSchema.parse(data)), deleteTaskHandler];
+export const deleteTaskWithValidation = [
+  validate(data => TaskParamsSchema.parse(data)),
+  authMiddleware,
+  deleteTaskHandler,
+];
