@@ -57,6 +57,7 @@ jspm_packages/
 .env.development.local
 .env.test.local
 .env.production.local
+drizzle.local.config.ts
 
 # parcel-bundler cache
 .cache
