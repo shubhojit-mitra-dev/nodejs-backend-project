@@ -13,6 +13,10 @@ provider:
   region: ${param:region}
   memorySize: 512
   timeout: 29
+  deploymentBucket:
+    name: nodejs-backend-api-deployments-920191147366
+  httpApi:
+    cors: true
   environment:
     NODE_ENV: ${env:NODE_ENV, 'production'}
     DATABASE_URL: ${env:DATABASE_URL}
@@ -27,18 +31,25 @@ provider:
     GOOGLE_REDIRECT_URI: ${env:GOOGLE_REDIRECT_URI, ''}
     GOOGLE_OAUTH_SCOPE: ${env:GOOGLE_OAUTH_SCOPE, 'openid email profile'}
 
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node22
+    exclude:
+      - '@aws-sdk/*'
+
 functions:
   api:
-    handler: dist/lambda.handler
+    handler: src/lambda.handler
     events:
-      - http:
+      - httpApi:
           path: /
           method: ANY
-          cors: true
-      - http:
+      - httpApi:
           path: /{proxy+}
           method: ANY
-          cors: true
 
 plugins:
   - serverless-offline
