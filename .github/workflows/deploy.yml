@@ -1,0 +1,102 @@
+name: CI/CD — Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1 — Lint & Type-check
+  # ─────────────────────────────────────────────
+  lint:
+    name: 🔍 Lint & Type-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: TypeScript type-check
+        run: pnpm ts-check
+
+  # ─────────────────────────────────────────────
+  # JOB 2 — Deploy to AWS Lambda (main only)
+  # ─────────────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy to AWS Lambda
+    runs-on: ubuntu-latest
+    needs: lint
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    env:
+      NODE_ENV: production
+      CORS_URL: ${{ secrets.CORS_URL }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      THUNDERMAIL_API_KEY: ${{ secrets.THUNDERMAIL_API_KEY }}
+      THUNDERMAIL_FROM: ${{ secrets.THUNDERMAIL_FROM }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_S3_LOG_BUCKET_NAME: ${{ secrets.AWS_S3_LOG_BUCKET_NAME }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+      GOOGLE_OAUTH_SCOPE: ${{ secrets.GOOGLE_OAUTH_SCOPE }}
+      SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (Swagger + TypeScript + alias resolve)
+        run: pnpm build:lambda
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless@4
+
+      - name: Deploy to AWS Lambda
+        run: serverless deploy --stage production --verbose
