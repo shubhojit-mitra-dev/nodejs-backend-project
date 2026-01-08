@@ -26,17 +26,17 @@
  */
 
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '@/db';
-import { users } from '@/db/schemas';
+import { users, otpCodes } from '@/db/schemas';
 import { asyncHandler, Response, validate } from '@/utils/asyncHandler';
 import ErrorHandler from '@/utils/errorHandler';
-import { LoginSchema, SignupSchema } from '@/utils/validations';
+import { LoginSchema, SignupSchema, ResetPasswordSchema, EmailVerificationSchema } from '@/utils/validations';
 import { comparePasswords, hashPassword } from '@/utils/helpers';
 import { generateJWTandSetCookie } from '@/utils/jwt_session';
 import logger from '@/core/logger';
 import type { AuthenticatedRequest } from '@/types/auth-request';
-import { env } from '@/env';
+import { sendOtpEmail } from '@/core/email.service';
 
 /**
  * Signup Handler
@@ -184,6 +184,11 @@ export const loginHandler = asyncHandler(async (req: ExpressRequest, res: Expres
     throw ErrorHandler.AuthError('Invalid password');
   }
 
+  // Block unverified users
+  if (!userExists[0].isVerified) {
+    throw ErrorHandler.Forbidden('Email not verified. Please verify your email before logging in.');
+  }
+
   // created cookie with jwt and return user after login
   const { password: _p, ...userSafe } = userExists[0];
   const token = generateJWTandSetCookie(res, String(userExists[0].id));
@@ -246,3 +251,58 @@ export const logoutHandler = asyncHandler(async (req: AuthenticatedRequest, res:
     throw error; // Re-throw other errors to be handled by asyncHandler
   }
 });
+
+// Forgot Password — send OTP to email
+export const forgotPasswordHandler = asyncHandler(async (req: ExpressRequest, _res: ExpressResponse) => {
+  const { email } = req.body;
+
+  const user = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+  if (!user.length) {throw ErrorHandler.NotFound('No account found with that email');}
+
+  const userId = user[0].id;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+  await db.delete(otpCodes).where(and(eq(otpCodes.userId, userId), eq(otpCodes.type, 'reset_password')));
+  await db.insert(otpCodes).values({ userId, code: otp, type: 'reset_password', expiresAt });
+
+  sendOtpEmail(email, otp, 'reset_password');
+
+  return Response.success(null, 'Password reset OTP sent to your email');
+});
+
+export const forgotPasswordHandlerWithValidation = [
+  validate(data => EmailVerificationSchema.parse(data)),
+  forgotPasswordHandler,
+];
+
+// Reset Password — verify OTP then update password
+export const resetPasswordHandler = asyncHandler(async (req: ExpressRequest, _res: ExpressResponse) => {
+  const { email, otp, newPassword } = req.body;
+
+  const user = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
+
+  if (!user.length) {throw ErrorHandler.NotFound('No account found with that email');}
+
+  const userId = user[0].id;
+
+  const existingOtp = await db
+    .select()
+    .from(otpCodes)
+    .where(and(eq(otpCodes.userId, userId), eq(otpCodes.code, otp), eq(otpCodes.type, 'reset_password')));
+
+  if (!existingOtp.length) {throw ErrorHandler.BadRequest('Invalid OTP');}
+  if (new Date(existingOtp[0].expiresAt) < new Date()) {throw ErrorHandler.BadRequest('OTP has expired');}
+
+  const hashed = await hashPassword(newPassword);
+  await db.update(users).set({ password: hashed }).where(eq(users.id, userId));
+  await db.delete(otpCodes).where(eq(otpCodes.id, existingOtp[0].id));
+
+  logger.info('Password reset successfully', { userId, email });
+  return Response.success(null, 'Password reset successfully');
+});
+
+export const resetPasswordHandlerWithValidation = [
+  validate(data => ResetPasswordSchema.parse(data)),
+  resetPasswordHandler,
+];
