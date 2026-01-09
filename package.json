@@ -19,7 +19,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "pre-commit": "lint-staged"
   },
   "keywords": [],
