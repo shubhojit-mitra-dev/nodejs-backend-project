@@ -49,7 +49,7 @@ dotenv.config();
 const envSchema: z.ZodObject = z.object({
   PORT: z.string().transform(Number).pipe(z.number().positive()).default(8080),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  CORS_URL: z.url('CORS_URL must be a valid URL').default('http://localhost:3000'),
+  CORS_URL: z.string().default('http://localhost:3000'),
   DATABASE_URL: z.url('DATABASE_URL must be a valid URL'),
   JWT_SECRET_KEY: z.string().min(10, 'JWT_SECRET_KEY must be set and at least 10 characters long'),
   LOG_DIR: z.string().default('logs'),

@@ -4,18 +4,20 @@ import logger from '@/core/logger';
 
 const thundermail = new ThunderMail(env.THUNDERMAIL_API_KEY as string);
 
-export const sendOtpEmail = (to: string, otp: string, type: string): void => {
+export const sendOtpEmail = async (to: string, otp: string, type: string): Promise<void> => {
   const subject = type === 'password_reset' ? 'Password Reset OTP' : 'Email Verification OTP';
   const html = `<p>Your OTP for <strong>${type.replace('_', ' ')}</strong> is:</p>
 <h2 style="letter-spacing:4px">${otp}</h2>
 <p>This code expires in <strong>10 minutes</strong>. Do not share it with anyone.</p>`;
 
-  // Fire-and-forget — non-blocking
-  thundermail.emails
-    .send({ from: env.THUNDERMAIL_FROM as string, to, subject, html })
-    .then(({ error }) => {
-      if (error) {logger.error('[Email] Failed to send OTP email:', { to, type, error });}
-      else {logger.info('[Email] OTP email sent:', { to, type });}
-    })
-    .catch(err => logger.error('[Email] Unexpected error sending OTP email:', { to, error: err?.message }));
+  try {
+    const { error } = await thundermail.emails.send({ from: env.THUNDERMAIL_FROM as string, to, subject, html });
+    if (error) {
+      logger.error('[Email] Failed to send OTP email:', { to, type, error });
+    } else {
+      logger.info('[Email] OTP email sent:', { to, type });
+    }
+  } catch (err) {
+    logger.error('[Email] Unexpected error sending OTP email:', { to, error: (err as Error)?.message });
+  }
 };

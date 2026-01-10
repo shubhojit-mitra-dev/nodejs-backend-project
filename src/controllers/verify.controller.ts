@@ -65,8 +65,8 @@ export const sendVerificationEmail = asyncHandler(async (req: ExpressRequest, _r
   await db.delete(otpCodes).where(and(eq(otpCodes.userId, userId), eq(otpCodes.type, type)));
   await db.insert(otpCodes).values({ userId, code: otp, type, expiresAt });
 
-  // Fire-and-forget — non-blocking
-  sendOtpEmail(email, otp, type);
+  // Await email send — Lambda freezes the process on return so fire-and-forget dies
+  await sendOtpEmail(email, otp, type);
 
   return Response.success(null, 'Verification OTP sent successfully');
 });
