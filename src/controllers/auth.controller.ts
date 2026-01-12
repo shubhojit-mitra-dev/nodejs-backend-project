@@ -257,7 +257,9 @@ export const forgotPasswordHandler = asyncHandler(async (req: ExpressRequest, _r
   const { email } = req.body;
 
   const user = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
-  if (!user.length) {throw ErrorHandler.NotFound('No account found with that email');}
+  if (!user.length) {
+    throw ErrorHandler.NotFound('No account found with that email');
+  }
 
   const userId = user[0].id;
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -266,7 +268,7 @@ export const forgotPasswordHandler = asyncHandler(async (req: ExpressRequest, _r
   await db.delete(otpCodes).where(and(eq(otpCodes.userId, userId), eq(otpCodes.type, 'reset_password')));
   await db.insert(otpCodes).values({ userId, code: otp, type: 'reset_password', expiresAt });
 
-  sendOtpEmail(email, otp, 'reset_password');
+  await sendOtpEmail(email, otp, 'reset_password');
 
   return Response.success(null, 'Password reset OTP sent to your email');
 });
@@ -282,7 +284,9 @@ export const resetPasswordHandler = asyncHandler(async (req: ExpressRequest, _re
 
   const user = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
 
-  if (!user.length) {throw ErrorHandler.NotFound('No account found with that email');}
+  if (!user.length) {
+    throw ErrorHandler.NotFound('No account found with that email');
+  }
 
   const userId = user[0].id;
 
@@ -291,8 +295,12 @@ export const resetPasswordHandler = asyncHandler(async (req: ExpressRequest, _re
     .from(otpCodes)
     .where(and(eq(otpCodes.userId, userId), eq(otpCodes.code, otp), eq(otpCodes.type, 'reset_password')));
 
-  if (!existingOtp.length) {throw ErrorHandler.BadRequest('Invalid OTP');}
-  if (new Date(existingOtp[0].expiresAt) < new Date()) {throw ErrorHandler.BadRequest('OTP has expired');}
+  if (!existingOtp.length) {
+    throw ErrorHandler.BadRequest('Invalid OTP');
+  }
+  if (new Date(existingOtp[0].expiresAt) < new Date()) {
+    throw ErrorHandler.BadRequest('OTP has expired');
+  }
 
   const hashed = await hashPassword(newPassword);
   await db.update(users).set({ password: hashed }).where(eq(users.id, userId));

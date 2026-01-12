@@ -44,7 +44,7 @@ if (!fs.existsSync(dir)) {
 }
 
 // Determine log level based on environment
-const logLevel = process.env.NODE_ENV === 'development' ? 'debug' : 'warn';
+const logLevel = 'info';
 
 /**
  * Custom format for console output in development
