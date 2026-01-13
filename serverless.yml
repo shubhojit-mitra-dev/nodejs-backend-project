@@ -24,6 +24,7 @@ provider:
     CORS_URL: ${env:CORS_URL, '*'}
     LOG_DIR: /tmp/logs
     THUNDERMAIL_API_KEY: ${env:THUNDERMAIL_API_KEY}
+    THUNDERMAIL_API_URL: ${env:THUNDERMAIL_API_URL}
     THUNDERMAIL_FROM: ${env:THUNDERMAIL_FROM, 'onboarding@thundermail.io'}
     AWS_S3_LOG_BUCKET_NAME: ${env:AWS_S3_LOG_BUCKET_NAME, ''}
     GOOGLE_CLIENT_ID: ${env:GOOGLE_CLIENT_ID, ''}
