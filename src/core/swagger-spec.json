@@ -390,9 +390,14 @@
     },
     "/api/auth/verify-account/google-verification": {
       "post": {
-        "summary": "Verify user account using Google OAuth (placeholder)",
+        "summary": "Verify user account using Google OAuth",
         "tags": ["Auth"],
-        "description": "This endpoint will be used to verify a user's account using Google OAuth.\nImplementation will be added later. For now it returns 501 Not Implemented.\n",
+        "description": "Initiates Google OAuth verification for the authenticated user. Requires a valid JWT Bearer token.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
           "501": {
             "description": "Not Implemented - Google verification not yet available",

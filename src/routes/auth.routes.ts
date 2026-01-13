@@ -292,15 +292,30 @@ router.route('/verify-account').post(verifyAccountWithValidation);
  * @openapi
  * /api/auth/verify-account/google-verification:
  *   post:
- *     summary: Verify user account using Google OAuth (placeholder)
+ *     summary: Verify user account using Google OAuth
  *     tags:
  *       - Auth
  *     description: |
- *       This endpoint will be used to verify a user's account using Google OAuth.
- *       Implementation will be added later. For now it returns 501 Not Implemented.
+ *       Initiates Google OAuth verification for the authenticated user.
+ *       Requires a valid JWT Bearer token.
+ *     security:
+ *       - BearerAuth: []
  *     responses:
- *       501:
- *         description: Not Implemented - Google verification not yet available
+ *       200:
+ *         description: Google OAuth verification initiated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Redirecting to Google OAuth
+ *       401:
+ *         description: Unauthorized - JWT token missing or invalid
  *         content:
  *           application/json:
  *             schema:
@@ -311,7 +326,7 @@ router.route('/verify-account').post(verifyAccountWithValidation);
  *                   example: false
  *                 message:
  *                   type: string
- *                   example: Google verification not implemented yet
+ *                   example: Authentication required
  */
 router.route('/verify-account/google-verification').post(authMiddleware, googleVerificationHandler);
 
