@@ -31,6 +31,7 @@ import type { AuthenticatedRequest } from '@/types/auth-request';
 import { verifyUserAccess } from '@/middlewares/verifyUserAccess';
 import { formatToIST } from '@/utils/helpers';
 import { sendOtpEmail } from '@/core/email.service';
+import logger from '@/core/logger';
 
 /**
  * Verify Account Handler
@@ -162,26 +163,49 @@ export const googleVerificationHandler = asyncHandler(async (req: AuthenticatedR
  * - Implementation: exchange `code` for tokens and store tokens in `auth_tokens` table.
  * - Currently returns 501 to indicate not implemented.
  */
-export const googleOAuthCallbackHandler = asyncHandler(async (req: ExpressRequest, _res: ExpressResponse) => {
+export const googleOAuthCallbackHandler = asyncHandler(async (req: ExpressRequest, res: ExpressResponse) => {
+  // Helper: redirect to app deep link with status
+  const deepLink = (process.env.APP_DEEP_LINK_SCHEME as string) ?? 'taskly://auth/google-callback';
+  const redirectTo = (status: 'success' | 'error', message?: string) => {
+    const url = new URL(deepLink);
+    url.searchParams.set('status', status);
+    if (message) {url.searchParams.set('message', encodeURIComponent(message));}
+    res.redirect(302, url.toString());
+  };
+
   const code = (req.query.code as string) || (req.body.code as string);
   const state = (req.query.state as string) || (req.body.state as string);
 
   if (!code) {
-    throw ErrorHandler.BadRequest('Authorization code is required');
+    redirectTo('error', 'Authorization code is required');
+    return;
   }
 
   if (!state) {
-    throw ErrorHandler.BadRequest('Missing state');
+    redirectTo('error', 'Missing state');
+    return;
   }
 
-  const parsedState = JSON.parse(Buffer.from(state, 'base64').toString('utf-8')) as { email?: string };
-  // Determine user by email present in state
-  const email = parsedState.email as string | undefined;
+  let parsedState: { email?: string };
+  try {
+    parsedState = JSON.parse(Buffer.from(state, 'base64').toString('utf-8')) as { email?: string };
+  } catch {
+    redirectTo('error', 'Invalid state');
+    return;
+  }
+
+  const email = parsedState.email;
   if (!email) {
-    throw ErrorHandler.BadRequest('Missing email in state');
+    redirectTo('error', 'Missing email in state');
+    return;
   }
 
   const existingUser = await db.select({ id: users.id }).from(users).where(eq(users.email, email));
+
+  if (!existingUser.length) {
+    redirectTo('error', 'User not found');
+    return;
+  }
 
   const userId = existingUser[0].id;
 
@@ -203,15 +227,15 @@ export const googleOAuthCallbackHandler = asyncHandler(async (req: ExpressReques
       body: body.toString(),
     });
   } catch (err) {
-    // Surface the underlying error message for easier debugging
-    throw ErrorHandler.InternalServerError('Failed to contact Google token endpoint', {
-      error: err instanceof Error ? err.message : String(err),
-    });
+    redirectTo('error', 'Failed to contact Google token endpoint');
+    return;
   }
 
   if (!tokenResp.ok) {
     const text = await tokenResp.text();
-    throw ErrorHandler.InternalServerError('Google token exchange failed', { status: tokenResp.status, body: text });
+    logger.error('Google token exchange failed', { status: tokenResp.status, body: text });
+    redirectTo('error', 'Google token exchange failed');
+    return;
   }
 
   const tokenData = (await tokenResp.json()) as {
@@ -224,7 +248,8 @@ export const googleOAuthCallbackHandler = asyncHandler(async (req: ExpressReques
   };
 
   if (!tokenData?.access_token) {
-    throw ErrorHandler.InternalServerError('Invalid token response from Google');
+    redirectTo('error', 'Invalid token response from Google');
+    return;
   }
 
   // Calculate expiration time in IST
@@ -242,13 +267,16 @@ export const googleOAuthCallbackHandler = asyncHandler(async (req: ExpressReques
       expiresAt,
     });
 
-    // mark user as googleConnected
+    // Mark user as googleConnected
     await db.update(users).set({ googleConnected: true }).where(eq(users.id, userId));
+
+    logger.info('Google account connected successfully', { userId, email });
   } catch (err) {
-    throw ErrorHandler.DatabaseError('Failed to store auth tokens', {
-      error: err instanceof Error ? err.message : String(err),
-    });
+    logger.error('Failed to store auth tokens', { error: err instanceof Error ? err.message : String(err) });
+    redirectTo('error', 'Failed to store auth tokens');
+    return;
   }
 
-  return Response.success({ message: 'Google account connected' }, 'Google OAuth callback handled');
+  // ✅ Redirect back to the React Native app via deep link
+  redirectTo('success');
 });

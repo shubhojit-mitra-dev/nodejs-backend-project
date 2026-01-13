@@ -62,6 +62,7 @@ const envSchema: z.ZodObject = z.object({
   GOOGLE_CLIENT_SECRET: z.string().min(1, 'GOOGLE_CLIENT_SECRET must be set'),
   GOOGLE_REDIRECT_URI: z.string().min(1, 'GOOGLE_REDIRECT_URI must be set').optional(),
   GOOGLE_OAUTH_SCOPE: z.string().default('openid email profile'),
+  APP_DEEP_LINK_SCHEME: z.string().default('taskew://auth/google-callback'),
 });
 
 /**
@@ -87,6 +88,7 @@ const validateEnv = () => {
       GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET!,
       GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI!,
       GOOGLE_OAUTH_SCOPE: process.env.GOOGLE_OAUTH_SCOPE!,
+      APP_DEEP_LINK_SCHEME: process.env.APP_DEEP_LINK_SCHEME!,
     });
   } catch (error) {
     logger.error('Invalid environment variables:');
