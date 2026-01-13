@@ -42,8 +42,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: env.CORS_URL as string, optionsSuccessStatus: 200 }));
 app.use(
   helmet({
-    contentSecurityPolicy: env.NODE_ENV !== 'development',
-    crossOriginEmbedderPolicy: env.NODE_ENV !== 'development',
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'script-src': ["'self'", "'unsafe-inline'", 'unpkg.com'],
+        'style-src': ["'self'", "'unsafe-inline'", 'unpkg.com'],
+        'img-src': ["'self'", 'data:', 'unpkg.com'],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
   }),
 );
 
@@ -51,7 +58,7 @@ app.use(
 app.get(
   '/',
   asyncHandler(async (_req: Request, res: Response) => {
-    res.json({ status: 'healthy', message: `Visit API documentation at http://localhost:${env.PORT}/api-docs` });
+    res.json({ status: 'healthy', message: `Visit API documentation at /api-docs` });
   }),
 );
 
@@ -75,7 +82,17 @@ app.get('/api-docs', (_req, res) => {
 <div id="swagger-ui"></div>
 <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
 <script>
-  SwaggerUIBundle({ url: '/api-docs.json', dom_id: '#swagger-ui', presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset], layout: 'BaseLayout' });
+  window.onload = () => {
+    window.ui = SwaggerUIBundle({ 
+      url: 'api-docs.json', 
+      dom_id: '#swagger-ui', 
+      presets: [
+        SwaggerUIBundle.presets.apis, 
+        SwaggerUIBundle.SwaggerUIStandalonePreset
+      ], 
+      layout: 'BaseLayout' 
+    });
+  };
 </script>
 </body>
 </html>`);
