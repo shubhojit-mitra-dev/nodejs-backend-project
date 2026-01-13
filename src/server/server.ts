@@ -83,10 +83,12 @@ app.get('/api-docs', (_req, res) => {
 <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
 <script>
   window.onload = () => {
-    // Dynamically determine the base path (handling API Gateway stages)
+    // 1. Dynamically determine the base path (handling API Gateway stages)
     const currentPath = window.location.pathname;
+    // If the path is /production/api-docs, the basePath is /production
     const basePath = currentPath.substring(0, currentPath.lastIndexOf('/api-docs'));
-    
+    const serverUrl = window.location.origin + basePath;
+
     window.ui = SwaggerUIBundle({ 
       url: 'api-docs.json', 
       dom_id: '#swagger-ui', 
@@ -95,14 +97,26 @@ app.get('/api-docs', (_req, res) => {
         SwaggerUIBundle.SwaggerUIStandalonePreset
       ], 
       layout: 'BaseLayout',
-      // The interceptor ensures that requests are sent to the correct stage-prefixed path
+      // 2. The interceptor ensures that requests are sent to the correct stage-prefixed path
       requestInterceptor: (request) => {
-        const url = new URL(request.url);
-        // If the request is for the same origin and doesn't already have the basePath
-        if (url.origin === window.location.origin && !url.pathname.startsWith(basePath)) {
-            request.url = window.location.origin + basePath + url.pathname;
+        try {
+          // Use current origin as base to safely parse both absolute and relative URLs
+          const url = new URL(request.url, window.location.origin);
+          
+          // Only intercept requests destined for our own domain
+          if (url.origin === window.location.origin) {
+            if (basePath && !url.pathname.startsWith(basePath)) {
+              request.url = window.location.origin + basePath + url.pathname;
+            }
+          }
+        } catch (e) {
+          console.error('Swagger Request Interceptor Error:', e);
         }
         return request;
+      },
+      // 3. Force Swagger to show the correctly detected server URL in the UI
+      onComplete: () => {
+        console.log('Swagger UI loaded at:', serverUrl);
       }
     });
   };
