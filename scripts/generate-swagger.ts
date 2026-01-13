@@ -18,10 +18,8 @@ const swaggerOptions: swaggerJSDoc.Options = {
         url: 'https://shubhojitmitra.live',
       },
     },
-    servers: [
-      { url: 'https://t82n4j1xb4.execute-api.ap-south-1.amazonaws.com', description: 'Production server' },
-      { url: 'http://localhost:8080', description: 'Development server' },
-    ],
+    // Servers is empty to allow Swagger UI to default to the current host
+    servers: [],
   },
   apis: [join(__dirname, '../src/routes/*.routes.ts')],
 };

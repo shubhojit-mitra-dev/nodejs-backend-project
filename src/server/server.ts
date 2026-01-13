@@ -83,6 +83,10 @@ app.get('/api-docs', (_req, res) => {
 <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
 <script>
   window.onload = () => {
+    // Dynamically determine the base path (handling API Gateway stages)
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/api-docs'));
+    
     window.ui = SwaggerUIBundle({ 
       url: 'api-docs.json', 
       dom_id: '#swagger-ui', 
@@ -90,7 +94,16 @@ app.get('/api-docs', (_req, res) => {
         SwaggerUIBundle.presets.apis, 
         SwaggerUIBundle.SwaggerUIStandalonePreset
       ], 
-      layout: 'BaseLayout' 
+      layout: 'BaseLayout',
+      // The interceptor ensures that requests are sent to the correct stage-prefixed path
+      requestInterceptor: (request) => {
+        const url = new URL(request.url);
+        // If the request is for the same origin and doesn't already have the basePath
+        if (url.origin === window.location.origin && !url.pathname.startsWith(basePath)) {
+            request.url = window.location.origin + basePath + url.pathname;
+        }
+        return request;
+      }
     });
   };
 </script>
