@@ -24,7 +24,9 @@
     "/api/auth/signup": {
       "post": {
         "summary": "Create a new user account",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -131,7 +133,9 @@
     "/api/auth/login": {
       "post": {
         "summary": "Authenticate a user and return a JWT",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -218,7 +222,9 @@
     "/api/auth/verify-account/email-verification": {
       "post": {
         "summary": "Send verification email with OTP",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -307,7 +313,9 @@
     "/api/auth/verify-account": {
       "post": {
         "summary": "Verify user account with OTP",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -400,7 +408,9 @@
     "/api/auth/verify-account/google-verification": {
       "post": {
         "summary": "Verify user account using Google OAuth (placeholder)",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "description": "This endpoint will be used to verify a user's account using Google OAuth.\nImplementation will be added later. For now it returns 501 Not Implemented.\n",
         "responses": {
           "501": {
@@ -429,7 +439,9 @@
     "/api/auth/logout": {
       "post": {
         "summary": "Logout the user by clearing the JWT cookie",
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "responses": {
           "200": {
             "description": "Logout successful",
@@ -494,11 +506,208 @@
         }
       }
     },
+    "/api/auth/forgot-password": {
+      "post": {
+        "summary": "Send password reset OTP to email",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "type"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "reset_password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset OTP sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset OTP sent to your email"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid request data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No account found with that email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "No account found with that email"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "summary": "Reset password using OTP",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "otp",
+                  "newPassword"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "example": "123456"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "example": "NewStrongP@ssw0rd"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid OTP"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No account found with that email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "No account found with that email"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "summary": "Basic application health check",
         "description": "Returns basic application health status including uptime, memory usage, and environment info",
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "responses": {
           "200": {
             "description": "Application is healthy",
@@ -573,7 +782,9 @@
       "get": {
         "summary": "Database health check",
         "description": "Tests database connectivity, response times, and basic operations",
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "responses": {
           "200": {
             "description": "Database is healthy and accessible",
@@ -629,7 +840,13 @@
                               "items": {
                                 "type": "string"
                               },
-                              "example": ["auth_tokens", "otp_codes", "reports", "tasks", "users"]
+                              "example": [
+                                "auth_tokens",
+                                "otp_codes",
+                                "reports",
+                                "tasks",
+                                "users"
+                              ]
                             }
                           }
                         },
@@ -646,7 +863,11 @@
                                 },
                                 "status": {
                                   "type": "string",
-                                  "enum": ["excellent", "good", "slow"],
+                                  "enum": [
+                                    "excellent",
+                                    "good",
+                                    "slow"
+                                  ],
                                   "example": "excellent"
                                 }
                               }
@@ -716,7 +937,9 @@
       "get": {
         "summary": "Comprehensive system health check",
         "description": "Returns detailed health information for both application and database",
-        "tags": ["Health"],
+        "tags": [
+          "Health"
+        ],
         "responses": {
           "200": {
             "description": "System is healthy",
@@ -862,7 +1085,9 @@
       "post": {
         "summary": "Create a new task",
         "description": "Creates a new task for the authenticated user. User must be verified to access this endpoint.",
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -950,7 +1175,9 @@
       "get": {
         "summary": "Get all tasks with pagination and filtering",
         "description": "Retrieves a paginated list of tasks for the authenticated user with optional filtering and sorting.",
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -985,7 +1212,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["pending", "in_progress", "completed", "cancelled"]
+              "enum": [
+                "pending",
+                "in_progress",
+                "completed",
+                "cancelled"
+              ]
             },
             "description": "Filter tasks by status",
             "example": "pending"
@@ -1006,7 +1238,12 @@
             "name": "sortBy",
             "schema": {
               "type": "string",
-              "enum": ["title", "createdAt", "updatedAt", "startTime"],
+              "enum": [
+                "title",
+                "createdAt",
+                "updatedAt",
+                "startTime"
+              ],
               "default": "createdAt"
             },
             "description": "Field to sort by",
@@ -1017,7 +1254,10 @@
             "name": "sortOrder",
             "schema": {
               "type": "string",
-              "enum": ["asc", "desc"],
+              "enum": [
+                "asc",
+                "desc"
+              ],
               "default": "desc"
             },
             "description": "Sort order",
@@ -1121,7 +1361,9 @@
       "get": {
         "summary": "Get task statistics",
         "description": "Retrieves task statistics including status distribution, completion rate, and upcoming tasks.",
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -1167,7 +1409,9 @@
       "get": {
         "summary": "Get a specific task by ID",
         "description": "Retrieves a specific task by its ID. The task must belong to the authenticated user.",
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -1227,7 +1471,9 @@
       "put": {
         "summary": "Update a specific task",
         "description": "Updates a specific task by its ID. The task must belong to the authenticated user.",
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -1300,7 +1546,9 @@
       "delete": {
         "summary": "Delete a specific task",
         "description": "Deletes a specific task by its ID. The task must belong to the authenticated user.",
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "security": [
           {
             "BearerAuth": []
@@ -1358,7 +1606,9 @@
     "/api/users": {
       "get": {
         "summary": "Get a simple test message from the User API",
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "responses": {
           "200": {
             "description": "Returns a welcome message",
@@ -1384,7 +1634,14 @@
     "schemas": {
       "Task": {
         "type": "object",
-        "required": ["id", "userId", "title", "status", "createdAt", "updatedAt"],
+        "required": [
+          "id",
+          "userId",
+          "title",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -1413,7 +1670,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "in_progress", "completed", "cancelled"],
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "cancelled"
+            ],
             "description": "Current status of the task",
             "example": "pending"
           },
@@ -1453,7 +1715,9 @@
       },
       "CreateTaskRequest": {
         "type": "object",
-        "required": ["title"],
+        "required": [
+          "title"
+        ],
         "properties": {
           "title": {
             "type": "string",
@@ -1471,7 +1735,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "in_progress", "completed", "cancelled"],
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "cancelled"
+            ],
             "default": "pending",
             "description": "Initial status of the task",
             "example": "pending"
@@ -1517,7 +1786,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "in_progress", "completed", "cancelled"],
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "cancelled"
+            ],
             "description": "Updated task status",
             "example": "in_progress"
           },
