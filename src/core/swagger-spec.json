@@ -399,8 +399,39 @@
           }
         ],
         "responses": {
-          "501": {
-            "description": "Not Implemented - Google verification not yet available",
+          "200": {
+            "description": "Google OAuth URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Google OAuth URL generated"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Google OAuth authorization URL. Redirect the user to this URL to begin the OAuth flow.",
+                          "example": "https://accounts.google.com/o/oauth2/v2/auth?client_id=CLIENT_ID&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fauth%2Fverify-account%2Fgoogle_callback&response_type=code&scope=openid+email+profile&access_type=offline&prompt=consent"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - JWT token missing or invalid",
             "content": {
               "application/json": {
                 "schema": {
@@ -412,7 +443,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Google verification not implemented yet"
+                      "example": "Authentication required"
                     }
                   }
                 }

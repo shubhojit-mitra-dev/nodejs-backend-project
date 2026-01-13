@@ -302,7 +302,7 @@ router.route('/verify-account').post(verifyAccountWithValidation);
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: Google OAuth verification initiated successfully
+ *         description: Google OAuth URL generated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -313,7 +313,15 @@ router.route('/verify-account').post(verifyAccountWithValidation);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Redirecting to Google OAuth
+ *                   example: Google OAuth URL generated
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                       format: uri
+ *                       description: Google OAuth authorization URL. Redirect the user to this URL to begin the OAuth flow.
+ *                       example: "https://accounts.google.com/o/oauth2/v2/auth?client_id=CLIENT_ID&redirect_uri=..."
  *       401:
  *         description: Unauthorized - JWT token missing or invalid
  *         content:
