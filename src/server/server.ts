@@ -18,10 +18,9 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from '@/core/swagger';
 import { env } from '@/env';
 import { errorMiddleware } from '@/middlewares/error';
-import { swaggerSpec } from '@/core/swagger';
 import { asyncHandler } from '@/utils/asyncHandler';
 import userRoutes from '@/routes/user.routes';
 import authRoutes from '@/routes/auth.routes';
@@ -60,7 +59,27 @@ app.get(
  * Swagger UI route
  * - Exposes the API documentation at /api-docs
  */
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Swagger UI — CDN-based, no static file redirect issues in Lambda/API Gateway
+app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
+app.get('/api-docs', (_req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`<!DOCTYPE html>
+<html>
+<head>
+  <title>Tasks API Docs</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script>
+  SwaggerUIBundle({ url: '/api-docs.json', dom_id: '#swagger-ui', presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset], layout: 'BaseLayout' });
+</script>
+</body>
+</html>`);
+});
 
 /**
  * API Routes

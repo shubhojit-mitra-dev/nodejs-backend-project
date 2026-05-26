@@ -113,8 +113,16 @@ export const EmailVerificationSchema = z.object({
 });
 
 /**
+ * Reset Password Schema
+ */
+export const ResetPasswordSchema = z.object({
+  email: z.email(),
+  otp: z.string().length(6, 'OTP must be 6 digits'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+/**
  * Verify OTP Schema
- * - For validating resend OTP requests
  */
 export const verifyOtpSchema = z.object({
   email: z.email(),

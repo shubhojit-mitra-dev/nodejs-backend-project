@@ -1,5 +1,11 @@
 import express, { type Router } from 'express';
-import { loginHandlerWithValidation, logoutHandler, signupHandlerWithValidation } from '@/controllers/auth.controller';
+import {
+  loginHandlerWithValidation,
+  logoutHandler,
+  signupHandlerWithValidation,
+  forgotPasswordHandlerWithValidation,
+  resetPasswordHandlerWithValidation,
+} from '@/controllers/auth.controller';
 import {
   googleVerificationHandler,
   googleOAuthCallbackHandler,
@@ -364,5 +370,7 @@ router.route('/verify-account/google_callback').get(googleOAuthCallbackHandler);
  *                   example: Internal Server Error
  */
 router.route('/logout').post(authMiddleware, logoutHandler);
+router.route('/forgot-password').post(forgotPasswordHandlerWithValidation);
+router.route('/reset-password').post(resetPasswordHandlerWithValidation);
 
 export default router;
