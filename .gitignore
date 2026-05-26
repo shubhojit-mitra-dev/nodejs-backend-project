@@ -138,3 +138,5 @@ logs
 *.log
 
 toggle-git.sh
+
+.serverless/

@@ -222,13 +222,7 @@ export const logoutHandler = asyncHandler(async (req: AuthenticatedRequest, res:
       timestamp: new Date().toISOString(),
     });
 
-    // Clear the JWT cookie
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-    });
+    // Clear the JWT cookie (no-op in Lambda, token is stateless)
 
     logger.info('User logged out successfully', {
       userId: user.id,
@@ -242,8 +236,7 @@ export const logoutHandler = asyncHandler(async (req: AuthenticatedRequest, res:
       error: error instanceof Error ? error.message : 'Unknown error',
     });
 
-    // Even if there's an error, we should still clear the cookie
-    res.clearCookie('token');
+    // Even if there's an error, token invalidation is client-side
 
     // If it's an auth-related error, return 401
     if (error instanceof ErrorHandler && error.statusCode === 401) {
