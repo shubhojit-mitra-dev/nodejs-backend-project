@@ -6,7 +6,16 @@ import importPlugin from 'eslint-plugin-import';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    ignores: ['build/**', 'dist/**', 'node_modules/**', 'coverage/**', 'drizzle/**'],
+    ignores: [
+      'build/**',
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      'drizzle/**',
+      '**/*.json',
+      'scripts/**',
+      '.serverless/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
