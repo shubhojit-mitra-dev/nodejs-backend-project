@@ -21,7 +21,6 @@
 
 import type { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import { eq, and } from 'drizzle-orm';
-import { sendMessageToQueue } from '@/core/aws/sqs.service';
 import { asyncHandler, Response, validate } from '@/utils/asyncHandler';
 import { EmailVerificationSchema, verifyOtpSchema } from '@/utils/validations';
 import ErrorHandler from '@/utils/errorHandler';
@@ -31,6 +30,7 @@ import { authTokens, otpCodes } from '@/db/schemas';
 import type { AuthenticatedRequest } from '@/types/auth-request';
 import { verifyUserAccess } from '@/middlewares/verifyUserAccess';
 import { formatToIST } from '@/utils/helpers';
+import { sendOtpEmail } from '@/core/email.service';
 
 /**
  * Verify Account Handler
@@ -45,21 +45,29 @@ import { formatToIST } from '@/utils/helpers';
 export const sendVerificationEmail = asyncHandler(async (req: ExpressRequest, _res: ExpressResponse) => {
   const { email, type } = req.body;
 
-  // Check if email exists in the database
-  const existingEmail = await db
-    .select({
-      email: users.email,
-    })
+  const existingUser = await db
+    .select({ id: users.id, email: users.email })
     .from(users)
-    .where(eq(users.email, email));
+    .where(eq(users.email, email))
+    .limit(1);
 
-  if (existingEmail.length === 0) {
+  if (existingUser.length === 0) {
     throw ErrorHandler.NotFound('Email not found');
   }
 
-  // Send message to SQS to trigger OTP email
-  await sendMessageToQueue('OTP_QUEUE', { email, type });
-  // Respond with success message
+  const userId = existingUser[0].id;
+
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+  // Delete any existing OTP for this user+type, then insert new one
+  await db.delete(otpCodes).where(and(eq(otpCodes.userId, userId), eq(otpCodes.type, type)));
+  await db.insert(otpCodes).values({ userId, code: otp, type, expiresAt });
+
+  // Fire-and-forget — non-blocking
+  sendOtpEmail(email, otp, type);
+
   return Response.success(null, 'Verification OTP sent successfully');
 });
 

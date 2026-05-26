@@ -21,10 +21,10 @@ import * as schema from './schemas';
 const connectionString = env.DATABASE_URL as string;
 const isTest = env.NODE_ENV === 'test';
 
-// AWS RDS connection pool with SSL
+// Connection pool — SSL required for Neon, disabled for test
 const pool = new Pool({
   connectionString,
-  ssl: isTest ? false : { rejectUnauthorized: false }, // Required for AWS RDS
+  ssl: isTest ? false : { rejectUnauthorized: false },
   max: 20,
   min: 5,
   idleTimeoutMillis: 30000,
@@ -82,6 +82,4 @@ export async function closeDb(): Promise<void> {
   }
 }
 
-// Graceful shutdown
-process.on('SIGINT', closeDb);
-process.on('SIGTERM', closeDb);
+// Graceful shutdown handlers are managed in src/index.ts
