@@ -15,6 +15,7 @@ export default [
       '**/*.json',
       'scripts/**',
       '.serverless/**',
+      'taskew-mobile/**',
     ],
   },
   js.configs.recommended,

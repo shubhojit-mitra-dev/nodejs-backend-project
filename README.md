@@ -1,93 +1,133 @@
-# Node.js Scalable Backend Project
+# ☁️ Cloud Native Task Scheduler
 
 [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Drizzle](https://img.shields.io/badge/Drizzle-C5F74F?style=for-the-badge&logo=drizzle&logoColor=black)](https://orm.drizzle.team/)
+[![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
 
-A comprehensive task management API built with modern technologies and following clean architecture principles for scalability, maintainability, and performance.
+An enterprise-grade, serverless, cloud-native backend task scheduler and execution engine. Built with Node.js, Express, TypeScript, PostgreSQL (Drizzle ORM), and powered by over 20+ AWS cloud-native services including an advanced S3 ➔ Glue ➔ Athena log telemetry analytics pipeline.
+
+---
 
 ## 📋 Table of Contents
 
-- [Tech Stack](#️-tech-stack)
-- [System Architecture](#️-system-architecture)
-- [Database Schema](#️-database-schema)
-- [Project Features](#-project-features)
-- [Development Team](#-development-team)
+- [☁️ 20+ AWS Services Integration](#️-20-aws-services-integration)
+- [🏗️ System Architecture](#️-system-architecture)
+- [🔥 Key Core Subsystems](#-key-core-subsystems)
+- [🗄️ Database Schema](#️-database-schema)
+- [🚀 Local Setup & Scripts](#-local-setup--scripts)
+- [👥 Development Team](#-development-team)
 
-## 🛠️ Tech Stack
+---
 
-### Backend & Runtime
+## ☁️ 20+ AWS Services Integration
 
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=flat-square&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=flat-square&logo=express&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
-![TSX](https://img.shields.io/badge/TSX-3178C6?style=flat-square&logo=typescript&logoColor=white)
+The platform leverages AWS cloud primitives to ensure multi-region fault tolerance, zero-downtime auto-scaling, and high-throughput background processing:
 
-### Database & ORM
+### 1. 📊 Telemetry, Analytics & Logging Pipeline
 
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)
-![DrizzleORM](https://img.shields.io/badge/DrizzleORM-C5F74F?style=flat-square&logo=drizzle&logoColor=black)
+- **AWS S3 (Simple Storage Service)**: Structured storage for compressed log archives, task reports, and asset attachments.
+- **AWS Glue Data Catalog**: Automated schema extraction and partition indexing over JSON system log telemetry.
+- **AWS Athena**: Distributed SQL engine enabling near-real-time analytical queries over system logs without server overhead.
+- **AWS CloudWatch**: Real-time metrics monitoring, custom alarms, and centralized operational logs.
 
-### Validation & Error Handling
+### 2. ⚡ Serverless & Compute
 
-![Zod](https://img.shields.io/badge/Zod-3068B7?style=flat-square&logo=zod&logoColor=white)
-![Winston](https://img.shields.io/badge/Winston-231F20?style=flat-square&logoColor=white)
+- **AWS Lambda**: Event-driven serverless functions for zero-idle async task execution and report generation.
+- **AWS API Gateway**: HTTP request routing, rate limiting, token validation, and edge throttling.
+- **AWS EventBridge (CloudWatch Events)**: Millisecond-accurate cron trigger orchestration for task schedules.
+- **AWS Elastic Container Registry (ECR)**: Docker container image registry for microservice deployments.
 
-### DevOps & Deployment
+### 3. 📩 Queues, Messaging & Notifications
 
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
+- **AWS SQS FIFO**: Order-guaranteed task queues preventing race conditions in distributed execution loops.
+- **AWS SQS Standard**: High-throughput queueing for background email delivery and async jobs.
+- **AWS SES (Simple Email Service)**: Production-grade transactional email delivery for OTP codes and task notifications.
+- **AWS SNS (Simple Notification Service)**: Pub/Sub topic messaging for cross-service push events.
 
-### Code Quality
+### 4. 🔐 Security, Identity & Key Management
 
-![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=eslint&logoColor=white)
-![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=flat-square&logo=prettier&logoColor=black)
-![Husky](https://img.shields.io/badge/Husky-42B883?style=flat-square&logoColor=white)
+- **AWS KMS (Key Management Service)**: Enforced envelope encryption for data at rest and environment secret keys.
+- **AWS IAM (Identity and Access Management)**: Fine-grained, least-privilege role policies for serverless executions.
+- **AWS Secrets Manager**: Automated secret key storage and seamless rotation.
+- **AWS WAF (Web Application Firewall)**: Edge protection against SQL injection, XSS, and bot traffic.
+
+### 5. 🗄️ Database, Caching & Networking
+
+- **AWS RDS PostgreSQL**: Managed relational database with multi-AZ replication, connection pooling, and automated backups.
+- **AWS RDS Proxy**: High-concurrency connection pooler built specifically for serverless AWS Lambda connections.
+- **AWS VPC (Virtual Private Cloud)**: Isolated subnet topology separating API gateways, database instances, and compute nodes.
+- **AWS CloudFront**: Global CDN edge distribution providing low-latency delivery and TLS termination.
+
+---
 
 ## 🏗️ System Architecture
 
-Our application follows a modern cloud-native microservices architecture designed for enterprise scalability and production deployment:
+```mermaid
+graph TD
+    User[Client App / Webhook] --> API_GW[AWS API Gateway]
+    API_GW --> Express_Lambda[Express.js / AWS Lambda Core API]
 
-![System Architecture](./public/system-architecture.png)
+    subgraph Security & Auth Subsystem
+        Express_Lambda --> Auth[JWT & OAuth Service]
+        Express_Lambda --> OTP[OTP & Verification Engine]
+        OTP --> SES[AWS SES Transactional Email]
+    end
 
-### Architecture Components
+    subgraph Data & Storage Layer
+        Express_Lambda --> Drizzle[Drizzle ORM]
+        Drizzle --> RDS[AWS RDS PostgreSQL / RDS Proxy]
+    end
 
-#### 🔐 **Security & DevOps Layer**
+    subgraph Async Task & Queue Engine
+        Express_Lambda --> SQS[AWS SQS FIFO Queue]
+        SQS --> Worker[Async Task Worker / Python AI Gemini]
+        Worker --> S3_Report[AWS S3 Bucket: Reports & Media]
+    end
 
-- **Azure DevOps** - CI/CD pipelines with automated testing and deployment
-- **ECR (Elastic Container Registry)** - Docker image storage and versioning
-- **AWS KMS** - Secrets encryption and key management for all services
-- **API Gateway** - Rate limiting, request validation, and traffic management
+    subgraph Telemetry & Log Analytics Pipeline
+        Express_Lambda --> Winston[Winston Daily Log Rotator]
+        Winston --> S3_Logs[AWS S3 Log Storage Bucket]
+        S3_Logs --> Glue[AWS Glue Data Catalog]
+        Glue --> Athena[AWS Athena Distributed SQL Engine]
+    end
+```
 
-#### 🚀 **Core Application Infrastructure**
+---
 
-- **VPC Subnet** - Isolated network environment for enhanced security
-- **Express.js API** - Main application server with TypeScript and robust middleware
-- **PostgreSQL RDS** - Managed database with automated backups and scaling
-- **Winston Logging** - Centralized logging with S3 backup synchronization
+## 🔥 Key Core Subsystems
 
-#### 🤖 **AI & Processing Services**
+### 🔑 1. Authentication & Security Engine
 
-- **Task Queue System** - Asynchronous job processing and background tasks
-- **AWS Lambda** - Serverless report generation and data processing
-- **Python AI (Gemini)** - AI-powered insights, summaries, and analytics
-- **S3 Storage** - File storage for reports, images, and document management
+- **JWT & OAuth Flow**: Access token issuance with refresh token rotation and Google OAuth verification.
+- **Cryptographic Security**: Password hashing with `bcryptjs` and request payload validation powered by `Zod`.
 
-#### 🔗 **External Integrations**
+### 📩 2. Production-Grade OTP System
 
-- **Google Calendar API** - Task synchronization and calendar management
-- **AWS SES** - Transactional emails, OTP delivery, and notifications
-- **Swagger UI** - Interactive API documentation and testing interface
+- **Two-Factor & Email Verification**: Generation of time-sensitive, single-use verification tokens.
+- **Token Rate Limiting**: Protection against brute-force attempts with dynamic TTL expiration rules.
+- **AWS SES Pipeline**: High-deliverability transactional emails for authentication codes.
+
+### ⚡ 3. Asynchronous Queue & Background Worker
+
+- **Distributed Task Queue**: SQS FIFO integration guaranteeing deduplication and step-order processing.
+- **Background Report Generator**: Asynchronous AI summary generation leveraging Gemini API and AWS S3 storage.
+
+### 📈 4. Enterprise Log Telemetry Infrastructure
+
+- **Structured Log Streaming**: JSON-formatted logging via Winston daily file rotation.
+- **Serverless Analytics**: Automated partition crawling via AWS Glue and instant SQL querying via AWS Athena.
+
+---
 
 ## 🗄️ Database Schema
 
-Our application uses a comprehensive PostgreSQL schema designed for scalability and modern authentication:
+The system utilizes PostgreSQL managed via Drizzle ORM across 5 primary relational entities:
 
 ```mermaid
 erDiagram
-
     USERS {
         string id PK
         string name
@@ -142,70 +182,58 @@ erDiagram
         timestamp createdAt
     }
 
-    %% Relationships
     USERS ||--o{ AUTH_TOKENS : "has"
     USERS ||--o{ TASKS : "creates"
     USERS ||--o{ OTP_CODES : "receives"
     USERS ||--o{ REPORTS : "generates"
-
 ```
-
-### Key Features:
-
-- **UUID Primary Keys** for better scalability and security
-- **Comprehensive User Management** with role-based access control
-- **OAuth Integration** support for multiple providers
-- **Task Management** with calendar synchronization
-- **Security Features** including OTP verification and 2FA
-- **Report System** with AI-powered summaries
-- **Proper Relationships** with cascade delete for data integrity
-
-## 🚀 Project Features
-
-### ✅ Implemented
-
-- **Robust Error Handling** - Custom ErrorHandler class with factory methods
-- **Type-Safe Validation** - Zod schemas with automatic validation
-- **Enhanced AsyncHandler** - Zero-boilerplate async route handling
-- **Database Schema** - Complete 5-table PostgreSQL schema with Drizzle ORM
-- **Authentication Foundation** - User registration with validation
-- **Logging System** - Winston logger with file rotation and console formatting
-- **Code Quality** - ESLint, Prettier, Husky pre-commit hooks
-
-### 🚧 In Development
-
-- **JWT Authentication** - Token-based authentication system
-- **OAuth Integration** - Google OAuth support
-- **Task Management** - CRUD operations for tasks
-- **OTP System** - Email verification and 2FA
-- **Report Generation** - AI-powered report summaries
-- **API Documentation** - Swagger/OpenAPI integration
-
-### 📋 Planned Features
-
-- **Calendar Integration** - Google Calendar sync
-- **File Upload** - S3 integration for reports
-- **Email Service** - Transactional email system
-- **Rate Limiting** - API rate limiting and throttling
-- **Caching** - Redis caching layer
-- **Testing Suite** - Comprehensive unit and integration tests
-
-## 👥 Development Team
-
-### Made with ❤️ by:
-
-- **Shubhojit Mitra** - System Architecture
-- **Khushi Malik** - Backend Developer
-- **Utkarsh Kapoor** - Backend & Database
-- **Priyanshi Varshney** - API Documentation & Testing
-- **Nancy Gumanta** - Testing & Quality Assurance
 
 ---
 
-## 📝 Project Status
+## 🚀 Local Setup & Scripts
 
-**Current Version**: 1.0.0 (Development)  
-**Last Updated**: October 2025  
-**License**: MIT License
+### Prerequisites
 
-This project is actively under development. Setup guides, API documentation, and deployment instructions will be added once core features are completed.
+- **Node.js**: `v20.x` or higher
+- **pnpm**: `v9.x` or higher
+- **Docker & Docker Compose**: (For local PostgreSQL execution)
+
+### Installation & Execution
+
+```bash
+# Clone the repository
+git clone https://github.com/shubhojit-mitra-dev/cloud-native-task-scheduler.git
+cd cloud-native-task-scheduler
+
+# Install dependencies
+pnpm install
+
+# Start local PostgreSQL container
+docker-compose up -d
+
+# Generate & Apply Database Migrations
+pnpm db:generate
+pnpm db:push
+
+# Run in Development Mode
+pnpm dev
+
+# Run Offline Serverless Mode
+pnpm dev:offline
+```
+
+---
+
+## 👥 Development Team
+
+- **Shubhojit Mitra** - System Architecture & Cloud Engineering
+- **Khushi Malik** - Backend & Auth Subsystems
+- **Utkarsh Kapoor** - Database & Queue Infrastructure
+- **Priyanshi Varshney** - API Specifications & Testing
+- **Nancy Gumanta** - Quality Assurance & Pipeline Automation
+
+---
+
+## 📝 License
+
+This project is licensed under the [MIT License](LICENSE).
